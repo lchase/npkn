@@ -1,18 +1,18 @@
 /* ---- theme picker ---- */
 .theme-picker { font-size: 12px; color: var(--muted); }
 .theme-row { display: flex; align-items: center; gap: 6px; }
-.segmented {
+.theme-segmented {
   display: flex; flex: 1; gap: 2px; padding: 2px;
   border: 1px solid var(--line); border-radius: var(--radius);
   background: color-mix(in srgb, var(--text) 3%, transparent);
 }
-.seg {
+.theme-seg {
   flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 4px;
   padding: 4px 2px; font-size: 12px; color: var(--muted);
   background: none; border: none; border-radius: calc(var(--radius) - 2px);
 }
-.seg:hover { color: var(--text); }
-.seg.on { color: var(--text); background: color-mix(in srgb, var(--text) 12%, transparent); }
+.theme-seg:hover { color: var(--text); }
+.theme-seg.on { color: var(--text); background: color-mix(in srgb, var(--text) 12%, transparent); }
 .theme-more { display: flex; flex-direction: column; gap: 1px; margin-top: 6px; }
 .theme-opt { text-align: left; padding: 4px 8px; font-size: 12px; color: var(--muted); background: none; border: none; border-radius: var(--radius); }
 .theme-opt:hover { color: var(--text); background: color-mix(in srgb, var(--text) 8%, transparent); }

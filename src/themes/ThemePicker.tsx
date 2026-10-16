@@ -34,7 +34,7 @@ export function ThemePicker() {
   const more = themes.filter(t => !CORE.has(t.id))
   const onMore = sel !== 'auto' && !CORE.has(sel)
   const seg = (id: string, label: string, icon: React.ReactNode) => (
-    <button type="button" className={'seg' + (sel === id ? ' on' : '')} aria-pressed={sel === id} onClick={() => choose(id)}>
+    <button type="button" className={'theme-seg' + (sel === id ? ' on' : '')} aria-pressed={sel === id} onClick={() => choose(id)}>
       {icon} {label}
     </button>
   )
@@ -42,7 +42,7 @@ export function ThemePicker() {
   return (
     <div className="theme-picker">
       <div className="theme-row">
-        <div className="segmented" role="group" aria-label="Theme">
+        <div className="theme-segmented" role="group" aria-label="Theme">
           {seg('ink', 'Dark', <MoonIcon size={14} />)}
           {seg('paper', 'Paper', <SunIcon size={14} />)}
           {seg('auto', 'Auto', <AutoIcon size={14} />)}
