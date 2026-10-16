@@ -226,7 +226,7 @@ Findings (Oct 2026, M5 Max, 2 runs each, 22 answers per model, after the fixes b
 
 ## State of the project
 
-- Not a git repository yet. The desktop build output (`release/`) and `node_modules` are gitignored.
+- Git repo, branch `main`, remote `origin` = `git@github.com:lchase/npkn.git` (SSH; HTTPS has no stored credentials here). The desktop build output (`release/`), `dist/` and `node_modules` are gitignored.
 - Name undecided (candidates discussed: scratchthat, forgetmenote, wrotle, napcrumbs, notle, scrapjot). Don't rename without being asked.
 - Longer-term ideas and open questions live in `docs/ideas.md`; add to it rather than here.
 - Open ideas, roughly in priority order: Vitest for `core/`; embeddings for Ask; persisted chat history; chip editing; tables/images; sync backend behind `data/pages.ts`.
