@@ -1,17 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><defs>
   <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2d3040"/><stop offset="1" stop-color="#14151c"/></linearGradient>
-  <linearGradient id="page" x1="0.1" y1="0" x2="0.9" y2="1"><stop offset="0" stop-color="#ff9277"/><stop offset="0.5" stop-color="#ff6b4a"/><stop offset="1" stop-color="#d9482b"/></linearGradient>
-  <filter id="lift" x="-10%" y="-10%" width="120%" height="125%"><feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#000" flood-opacity="0.38"/></filter></defs><g filter="url(#lift)"><rect x="100" y="100" width="824" height="824" rx="188" fill="url(#tile)"/><rect x="101" y="101" width="822" height="822" rx="187" fill="none" stroke="#fff" stroke-opacity="0.08" stroke-width="2"/></g><g transform="translate(512 512) scale(0.92) translate(-512 -512)">
-  <ellipse cx="512" cy="872" rx="238" ry="26" fill="#000" opacity="0.26"/>
-  <path d="M318 180 H604 L754 330 V796 a48 48 0 0 1 -48 48 H318 a48 48 0 0 1 -48 -48 V228 a48 48 0 0 1 48 -48 Z" fill="#a8331d" transform="translate(0 26)"/>
-  <path d="M318 180 H604 L754 330 V796 a48 48 0 0 1 -48 48 H318 a48 48 0 0 1 -48 -48 V228 a48 48 0 0 1 48 -48 Z" fill="url(#page)"/>
-  <path d="M604 180 V282 a48 48 0 0 0 48 48 H754 Z" fill="#ffe3d9"/>
-  <path d="M604 180 V282 a48 48 0 0 0 48 48 H754 Z" fill="#000" opacity="0.1"/>
-  <g fill="#fff">
-    <rect x="344" y="470" width="336" height="48" rx="24"/>
-    <rect x="344" y="588" width="336" height="48" rx="24"/>
-    <rect x="344" y="706" width="206" height="48" rx="24"/>
-  </g>
-  <!-- the label chip: the app's own @label pill, sitting on the first line -->
-  <rect x="344" y="388" width="170" height="58" rx="29" fill="#14b8a6"/>
-  <circle cx="378" cy="417" r="10" fill="#fff"/></g></svg>
+  <linearGradient id="paper" x1="0.15" y1="0" x2="0.85" y2="1"><stop offset="0" stop-color="#f0e8d6"/><stop offset="1" stop-color="#e4d6b8"/></linearGradient>
+  <linearGradient id="ink" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0876a"/><stop offset="1" stop-color="#d4533a"/></linearGradient>
+  <filter id="lift" x="-10%" y="-10%" width="120%" height="125%"><feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#000" flood-opacity="0.38"/></filter>
+  <filter id="soft" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#000" flood-opacity="0.45"/></filter></defs><g filter="url(#lift)"><rect x="100" y="100" width="824" height="824" rx="188" fill="url(#tile)"/><rect x="101" y="101" width="822" height="822" rx="187" fill="none" stroke="#fff" stroke-opacity="0.08" stroke-width="2"/></g><g transform="translate(512 512) scale(0.9) translate(-512 -512)">
+  <g filter="url(#soft)"><path d="M512 182 L842 512 L512 842 L182 512 Z" fill="url(#paper)"/></g>
+  <path d="M512 182 L842 512 L512 512 Z" fill="#c9b78f" opacity="0.55"/>
+  <path d="M512 512 V842" stroke="#a89873" stroke-opacity="0.45" stroke-width="4"/>
+  <path d="M182 512 H842" stroke="#a89873" stroke-opacity="0.55" stroke-width="6" stroke-dasharray="14 12"/>
+  <g fill="#a89873" opacity="0.5"><circle cx="257" cy="512" r="9"/><circle cx="333" cy="512" r="9"/><circle cx="409" cy="512" r="9"/><circle cx="690" cy="512" r="9"/><circle cx="767" cy="512" r="9"/></g>
+  <rect x="-81" y="-34" width="162" height="68" rx="3" fill="url(#ink)" transform="translate(544 594) rotate(45)"/>
+  <path d="M438 554 L457 568 L431 593 Z" fill="#fff"/></g></svg>

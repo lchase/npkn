@@ -128,7 +128,7 @@ are shareable data) and not part of a notebook (they differ per device). Width i
 Generated, not hand-edited: `npm run icons` runs `scripts/make-icons.cjs` under Electron and rewrites
 `public/*` (web) and `desktop/icon.{svg,png,icns}`. The design lives in that script only.
 
-- The mark is a note, deliberately not the character: the product is notes and knowledge, and the agent
+- The mark is a folded napkin note (cream diamond, perforation line, terracotta ink stroke), deliberately not the character: the product is notes and knowledge, and the agent
   is a feature of it. Keep the app's identity (icon, name, copy) on the notebook.
 - Variants matter: a bare mark with no tile for favicons, an ~824px tile on a 1024 canvas with transparent
   margin and shadow for macOS (Apple's grid), a full-bleed square for iOS/PWA, and a maskable one with the
@@ -136,7 +136,8 @@ Generated, not hand-edited: `npm run icons` runs `scripts/make-icons.cjs` under 
 - **Trap:** in this Electron build `show: false` and `transparent: true` windows both fail to load
   (`ERR_FAILED`). The script renders each icon on black and on white and recovers alpha from the
   difference (exact, including soft edges and shadows) instead of asking for a transparent capture. It
-  also asserts the corner pixel of the app icon is transparent.
+  also asserts the corner pixel of the app icon is transparent. The render window needs `enableLargerThanScreen`,
+  otherwise a 1024px capture is clamped to the screen height and comes out squashed.
 - `manifest.webmanifest` still says "npkn". When the app is renamed, update that and `productName`.
 
 ## Icons (UI)

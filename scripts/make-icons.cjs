@@ -8,10 +8,10 @@
 //             icon-maskable-512.png
 //   desktop/  icon.svg, icon.png (1024), icon.icns (macOS)
 //
-// The design is a note: a coral page with a folded corner, lines of text, and a label chip (the app's
-// own @label pill). The product is notes and knowledge; the assistant character lives inside the app
-// and is deliberately NOT the app icon. It is text-free so it survives a rename. Edit the mark below
-// and re-run.
+// The design is a napkin note: a cream square folded on the diagonal into a diamond, a perforation
+// line across the middle and a terracotta ink mark (the theme's accent). The product is notes and
+// knowledge; the assistant character lives inside the app and is deliberately NOT the app icon. It is
+// text-free so it survives a rename. Edit the mark below and re-run.
 
 const { app, BrowserWindow } = require('electron')
 const fs = require('node:fs')
@@ -25,30 +25,30 @@ const DESKTOP = path.join(ROOT, 'desktop')
 
 // ---- the mark (drawn on a 1024 canvas, page centred near 512,512) ---------------------------------
 
-// A page with its top-right corner folded: 484 wide, 664 tall, 48px corners, 150px fold.
-const PAGE = 'M318 180 H604 L754 330 V796 a48 48 0 0 1 -48 48 H318 a48 48 0 0 1 -48 -48 V228 a48 48 0 0 1 48 -48 Z'
-const FOLD = 'M604 180 V282 a48 48 0 0 0 48 48 H754 Z'
+// A diamond 660 across, centred on 512,512. The top-right quarter is the folded-back flap.
+const DIAMOND = 'M512 182 L842 512 L512 842 L182 512 Z'
+const FLAP = 'M512 182 L842 512 L512 512 Z'
 
 const DEFS = `
   <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2d3040"/><stop offset="1" stop-color="#14151c"/></linearGradient>
-  <linearGradient id="page" x1="0.1" y1="0" x2="0.9" y2="1"><stop offset="0" stop-color="#ff9277"/><stop offset="0.5" stop-color="#ff6b4a"/><stop offset="1" stop-color="#d9482b"/></linearGradient>
-  <filter id="lift" x="-10%" y="-10%" width="120%" height="125%"><feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#000" flood-opacity="0.38"/></filter>`
+  <linearGradient id="paper" x1="0.15" y1="0" x2="0.85" y2="1"><stop offset="0" stop-color="#f0e8d6"/><stop offset="1" stop-color="#e4d6b8"/></linearGradient>
+  <linearGradient id="ink" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0876a"/><stop offset="1" stop-color="#d4533a"/></linearGradient>
+  <filter id="lift" x="-10%" y="-10%" width="120%" height="125%"><feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#000" flood-opacity="0.38"/></filter>
+  <filter id="soft" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#000" flood-opacity="0.45"/></filter>`
 
-/** The note. `detail` drops the gloss and ground shadow for tiny sizes where they only add mud. */
+/** The note. `detail` drops the perforation and crease for tiny sizes where they only add mud. */
 const mark = (detail = true) => `
-  ${detail ? '<ellipse cx="512" cy="872" rx="238" ry="26" fill="#000" opacity="0.26"/>' : ''}
-  <path d="${PAGE}" fill="#a8331d" transform="translate(0 26)"/>
-  <path d="${PAGE}" fill="url(#page)"/>
-  <path d="${FOLD}" fill="#ffe3d9"/>
-  <path d="${FOLD}" fill="#000" opacity="0.1"/>
-  <g fill="#fff">
-    <rect x="344" y="470" width="336" height="48" rx="24"/>
-    <rect x="344" y="588" width="336" height="48" rx="24"/>
-    <rect x="344" y="706" width="206" height="48" rx="24"/>
-  </g>
-  <!-- the label chip: the app's own @label pill, sitting on the first line -->
-  <rect x="344" y="388" width="170" height="58" rx="29" fill="#14b8a6"/>
-  <circle cx="378" cy="417" r="10" fill="#fff"/>`
+  <g filter="url(#soft)"><path d="${DIAMOND}" fill="url(#paper)"/></g>
+  <path d="${FLAP}" fill="#c9b78f" opacity="0.55"/>
+  ${
+    detail
+      ? `<path d="M512 512 V842" stroke="#a89873" stroke-opacity="0.45" stroke-width="4"/>
+  <path d="M182 512 H842" stroke="#a89873" stroke-opacity="0.55" stroke-width="6" stroke-dasharray="14 12"/>
+  <g fill="#a89873" opacity="0.5"><circle cx="257" cy="512" r="9"/><circle cx="333" cy="512" r="9"/><circle cx="409" cy="512" r="9"/><circle cx="690" cy="512" r="9"/><circle cx="767" cy="512" r="9"/></g>`
+      : ''
+  }
+  <rect x="-81" y="-34" width="162" height="68" rx="3" fill="url(#ink)" transform="translate(544 594) rotate(45)"/>
+  <path d="M438 554 L457 568 L431 593 Z" fill="#fff"/>`
 
 const place = (content, scale) => `<g transform="translate(512 512) scale(${scale}) translate(-512 -512)">${content}</g>`
 const svg = (viewBox, inner) =>
@@ -56,18 +56,18 @@ const svg = (viewBox, inner) =>
 
 const SVGS = {
   // Browser tab and any place that wants the bare mark on a transparent background.
-  favicon: svg('215 130 594 780', mark(true)),
+  favicon: svg('150 150 724 724', mark(false)),
   // macOS app icon: Apple's grid is an ~824px tile centred on 1024, with room for the system shadow.
   app: svg(
     '0 0 1024 1024',
     `<g filter="url(#lift)"><rect x="100" y="100" width="824" height="824" rx="188" fill="url(#tile)"/>` +
       `<rect x="101" y="101" width="822" height="822" rx="187" fill="none" stroke="#fff" stroke-opacity="0.08" stroke-width="2"/></g>` +
-      place(mark(true), 0.92),
+      place(mark(true), 0.9),
   ),
   // iOS and PWA "any": a full-bleed square. The OS applies its own rounding.
-  square: svg('0 0 1024 1024', `<rect width="1024" height="1024" fill="url(#tile)"/>` + place(mark(true), 0.9)),
-  // Android adaptive icons crop to a circle/squircle: keep the character inside the central 60%.
-  maskable: svg('0 0 1024 1024', `<rect width="1024" height="1024" fill="url(#tile)"/>` + place(mark(true), 0.7)),
+  square: svg('0 0 1024 1024', `<rect width="1024" height="1024" fill="url(#tile)"/>` + place(mark(true), 0.95)),
+  // Android adaptive icons crop to a circle/squircle: keep the mark inside the central 60%.
+  maskable: svg('0 0 1024 1024', `<rect width="1024" height="1024" fill="url(#tile)"/>` + place(mark(true), 0.85)),
 }
 
 // ---- rasterise -----------------------------------------------------------------------------------
@@ -85,7 +85,7 @@ let win
  */
 async function render(svgText, size) {
   tmpDir ??= fs.mkdtempSync(path.join(os.tmpdir(), 'npkn-icons-'))
-  win ??= new BrowserWindow({ width: 1024, height: 1024, useContentSize: true, webPreferences: { offscreen: true } })
+  win ??= new BrowserWindow({ width: 1024, height: 1024, useContentSize: true, enableLargerThanScreen: true, webPreferences: { offscreen: true } })
 
   const stem = path.join(tmpDir, `i-${size}-${Math.abs(hash(svgText))}`)
   fs.writeFileSync(stem + '.svg', svgText)
