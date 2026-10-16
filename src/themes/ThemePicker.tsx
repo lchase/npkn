@@ -1,13 +1,15 @@
 import { useRef, useState } from 'react'
-import { allThemes, importTheme, oppositeThemeId, selectTheme, selectedThemeId } from './index'
+import { AutoIcon, MoonIcon, PaletteIcon, SunIcon } from '../ui/icons'
+import { allThemes, importTheme, selectTheme, selectedThemeId } from './index'
 
-/** Plain labels for the two defaults so "Light" and "Dark" are obvious, then everything else. */
-const LABEL: Record<string, string> = { paper: 'Light (Paper)', ink: 'Dark (Ink)' }
+/** The two defaults plus Auto get one-click buttons; every other theme lives behind the palette button. */
+const CORE = new Set(['paper', 'ink'])
 
 export function ThemePicker() {
   const [sel, setSel] = useState(selectedThemeId())
   const [, bump] = useState(0)
   const [error, setError] = useState('')
+  const [open, setOpen] = useState(false)
   const file = useRef<HTMLInputElement>(null)
 
   const choose = (id: string) => {
@@ -29,40 +31,45 @@ export function ThemePicker() {
   }
 
   const themes = allThemes()
-  const core = ['paper', 'ink'].map(id => themes.find(t => t.id === id)!).filter(Boolean)
-  const more = themes.filter(t => !LABEL[t.id])
+  const more = themes.filter(t => !CORE.has(t.id))
+  const onMore = sel !== 'auto' && !CORE.has(sel)
+  const seg = (id: string, label: string, icon: React.ReactNode) => (
+    <button type="button" className={'seg' + (sel === id ? ' on' : '')} aria-pressed={sel === id} onClick={() => choose(id)}>
+      {icon} {label}
+    </button>
+  )
 
   return (
     <div className="theme-picker">
-      <label>
-        Theme
-        <span className="theme-row">
-          <select value={sel} onChange={e => choose(e.target.value)}>
-            <option value="auto">Auto (system)</option>
-            {core.map(t => (
-              <option key={t.id} value={t.id}>
-                {LABEL[t.id]}
-              </option>
-            ))}
-            <optgroup label="More themes">
-              {more.map(t => (
-                <option key={t.id} value={t.id}>
-                  {t.name}
-                </option>
-              ))}
-            </optgroup>
-          </select>
-          <button
-            type="button"
-            className="theme-flip"
-            title="Flip light / dark (stays in the same theme family when it has one)"
-            onClick={() => choose(oppositeThemeId(sel))}
-          >
-            ◐
+      <div className="theme-row">
+        <div className="segmented" role="group" aria-label="Theme">
+          {seg('ink', 'Dark', <MoonIcon size={14} />)}
+          {seg('paper', 'Paper', <SunIcon size={14} />)}
+          {seg('auto', 'Auto', <AutoIcon size={14} />)}
+        </div>
+        <button
+          type="button"
+          className={'icon-btn' + (open || onMore ? ' on' : '')}
+          title="More themes"
+          aria-label="More themes"
+          aria-expanded={open}
+          onClick={() => setOpen(o => !o)}
+        >
+          <PaletteIcon />
+        </button>
+      </div>
+      {open && (
+        <div className="theme-more">
+          {more.map(t => (
+            <button key={t.id} type="button" className={'theme-opt' + (sel === t.id ? ' on' : '')} onClick={() => choose(t.id)}>
+              {t.name}
+            </button>
+          ))}
+          <button type="button" className="theme-opt" onClick={() => file.current?.click()}>
+            Import theme…
           </button>
-        </span>
-      </label>
-      <button className="linklike" onClick={() => file.current?.click()}>Import theme…</button>
+        </div>
+      )}
       <input ref={file} type="file" accept=".json,application/json" hidden onChange={e => onFile(e.target.files?.[0])} />
       {error && <p className="theme-error">{error}</p>}
     </div>

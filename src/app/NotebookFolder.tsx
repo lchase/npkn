@@ -1,3 +1,4 @@
+import { FolderIcon, StopIcon } from '../ui/icons'
 import { pickNotebookFolder, reconnectNotebookFolder, stopUsingNotebookFolder, useNotebookFolder, useSyncStatus } from '../data/folderSync'
 
 const tail = (p: string) => p.split('/').filter(Boolean).slice(-2).join('/')
@@ -39,28 +40,37 @@ export function NotebookFolder() {
 
   return (
     <div className="notebook-folder">
-      <div className="nf-title">Notebook folder</div>
-      {s.root ? (
-        <div className="nf-path" title={s.root}>
-          {tail(s.root)}
+      <div className="nf-head">
+        <div className="nf-names">
+          <div className="nf-path" title={s.root ?? undefined}>
+            {s.root ? tail(s.root) : 'Notebook'}
+          </div>
+          <div className="nf-title">Notebook folder</div>
         </div>
-      ) : null}
+        <div className="nf-icons">
+          <button className="icon-btn" title={s.root ? 'Change folder…' : 'Choose folder…'} aria-label={s.root ? 'Change folder' : 'Choose folder'} onClick={choose}>
+            <FolderIcon />
+          </button>
+          {s.root && (
+            <button
+              className="icon-btn"
+              title="Stop syncing"
+              aria-label="Stop syncing"
+              onClick={() => confirm('Stop syncing? Files stay in the folder and pages stay in the app.') && stopUsingNotebookFolder()}
+            >
+              <StopIcon />
+            </button>
+          )}
+        </div>
+      </div>
       <div className={'nf-status ' + s.state}>{label}</div>
-      <div className="nf-actions">
-        {s.state === 'needs-permission' && (
-          <button className="linklike" onClick={() => void reconnectNotebookFolder()}>
+      {s.state === 'needs-permission' && (
+        <div className="nf-actions">
+          <button className="dock-btn" onClick={() => void reconnectNotebookFolder()}>
             Reconnect
           </button>
-        )}
-        <button className="linklike" onClick={choose}>
-          {s.root ? 'Change…' : 'Choose folder…'}
-        </button>
-        {s.root && (
-          <button className="linklike" onClick={() => confirm('Stop syncing? Files stay in the folder and pages stay in the app.') && stopUsingNotebookFolder()}>
-            Stop
-          </button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   )
 }

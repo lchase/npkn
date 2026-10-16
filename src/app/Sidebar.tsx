@@ -4,7 +4,7 @@ import { Avatar, type Mood } from '../features/ask/characters'
 import { useAsk } from '../features/ask/store'
 import { ThemePicker } from '../themes/ThemePicker'
 import { NotebookFolder } from './NotebookFolder'
-import { LockIcon } from '../ui/icons'
+import { ExportIcon, ImportIcon, LockIcon, PageIcon, PlusIcon, SampleIcon, SearchIcon, SettingsIcon, TodosIcon } from '../ui/icons'
 
 export type View = { kind: 'todos' } | { kind: 'ask' } | { kind: 'settings' } | { kind: 'page'; id: string }
 
@@ -24,7 +24,7 @@ interface Props {
 }
 
 const ASK_STATUS: Record<Mood, string> = {
-  idle: 'Ask your notes',
+  idle: 'Ready',
   thinking: 'Thinking…',
   talking: 'Answering…',
   happy: 'Done!',
@@ -108,8 +108,11 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
 
   const count = (id: string): number => (byParent.get(id) ?? []).reduce((n, c) => n + 1 + count(c.id), 0)
 
-  const tree = (parentId: string | null, depth = 0): React.ReactNode =>
-    (byParent.get(parentId) ?? []).map(p => {
+  const tree = (parentId: string | null, depth = 0): React.ReactNode => {
+    const siblings = byParent.get(parentId) ?? []
+    // Only reserve the chevron column when some sibling has children, so a flat list isn't indented.
+    const anyKids = siblings.some(p => byParent.has(p.id))
+    return siblings.map(p => {
       const hasKids = byParent.has(p.id)
       const isCollapsed = hasKids && collapsed.has(p.id)
       return (
@@ -131,8 +134,9 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
                 </svg>
               </button>
             ) : (
-              <span className="nav-chevron nav-chevron-empty" />
+              anyKids && <span className="nav-chevron nav-chevron-empty" />
             )}
+            <span className="nav-glyph"><PageIcon /></span>
             <span className="nav-title">{p.title || 'Untitled'}</span>
             {privateIds.has(p.id) && <span className="nav-lock" title="Private: not sent to cloud models"><LockIcon size={11} /></span>}
             {isCollapsed && <span className="nav-count">{count(p.id)}</span>}
@@ -144,27 +148,37 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
         </div>
       )
     })
+  }
 
   return (
     <aside>
-      <input className="search" placeholder="Search…" value={query} onChange={e => onQuery(e.target.value)} />
+      <div className="brand">
+        <img src="/favicon.svg" alt="" width="30" height="30" />
+        <span>npkn</span>
+      </div>
+      <label className="search">
+        <SearchIcon size={16} />
+        <input placeholder="Search notes…" value={query} onChange={e => onQuery(e.target.value)} />
+      </label>
 
       <div className={'nav-item ask-link' + (view.kind === 'ask' ? ' active' : '')} onClick={() => go({ kind: 'ask' })}>
         <span className="nav-avatar">
-          <Avatar size={38} mood={displayMood} />
+          <Avatar size={26} mood={displayMood} />
         </span>
-        <span className="nav-ask-text">
-          <span className="nav-ask-title">Ask</span>
-          <span className={`nav-ask-status ${displayMood}`}>{ASK_STATUS[displayMood]}</span>
+        <span className="nav-title">Ask</span>
+        <span className={`nav-ask-status ${displayMood}`}>
+          <i className="dot" />
+          {ASK_STATUS[displayMood]}
         </span>
       </div>
-      <div className={'nav-item todos-link' + (view.kind === 'todos' ? ' active' : '')} onClick={() => go({ kind: 'todos' })}>
-        <span className="nav-title">☑ Todos</span>
+      <div className={'nav-item nav-primary' + (view.kind === 'todos' ? ' active' : '')} onClick={() => go({ kind: 'todos' })}>
+        <span className="nav-glyph"><TodosIcon /></span>
+        <span className="nav-title">Todos</span>
         {openTodoCount > 0 && <span className="badge">{openTodoCount}</span>}
       </div>
-
-      <div className={'nav-item todos-link' + (view.kind === 'settings' ? ' active' : '')} onClick={() => go({ kind: 'settings' })}>
-        <span className="nav-title">⚙ Settings</span>
+      <div className={'nav-item nav-primary' + (view.kind === 'settings' ? ' active' : '')} onClick={() => go({ kind: 'settings' })}>
+        <span className="nav-glyph"><SettingsIcon /></span>
+        <span className="nav-title">Settings</span>
       </div>
 
       <div className="section-head">
@@ -175,8 +189,8 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
               {allCollapsed ? '⊞' : '⊟'}
             </button>
           )}
-          <button className="mini" title="New page" onClick={() => onAdd(null)}>
-            +
+          <button className="new-page" title="New page" onClick={() => onAdd(null)}>
+            <PlusIcon size={12} /> New
           </button>
         </span>
       </div>
@@ -185,6 +199,7 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
         results.length ? (
           results.map(p => (
             <div key={p.id} className="nav-item" style={{ paddingLeft: 10 }} onClick={() => go({ kind: 'page', id: p.id })}>
+              <span className="nav-glyph"><PageIcon /></span>
               <span className="nav-title">{p.title || 'Untitled'}</span>
             </div>
           ))
@@ -195,30 +210,32 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
         tree(null)
       )}
 
-      <div className="data-actions">
-        <button className="linklike" onClick={() => importInput.current?.click()} title="Import .md files or an exported bundle (.zip), with optional OKF front matter">
-          Import
-        </button>
-        <button className="linklike" onClick={onExportBundle} title="Download every page as an Open Knowledge Format bundle (.zip)">
-          Export bundle
-        </button>
-        <button className="linklike" onClick={onLoadSample} title="Add a fictional notebook for trying out Ask (delete the 'Sample notebook' page to remove it)">
-          Load sample
-        </button>
-        <input
-          ref={importInput}
-          type="file"
-          accept=".md,.markdown,.zip,text/markdown,application/zip"
-          multiple
-          hidden
-          onChange={e => {
-            onImport(e.target.files)
-            if (importInput.current) importInput.current.value = ''
-          }}
-        />
+      <div className="sidebar-dock">
+        <div className="data-actions">
+          <button className="dock-btn" onClick={() => importInput.current?.click()} title="Import .md files or an exported bundle (.zip), with optional OKF front matter">
+            <ImportIcon /> Import
+          </button>
+          <button className="dock-btn" onClick={onExportBundle} title="Download every page as an Open Knowledge Format bundle (.zip)">
+            <ExportIcon /> Export
+          </button>
+          <button className="dock-btn" onClick={onLoadSample} title="Add a fictional notebook for trying out Ask (delete the 'Sample notebook' page to remove it)">
+            <SampleIcon /> Sample
+          </button>
+          <input
+            ref={importInput}
+            type="file"
+            accept=".md,.markdown,.zip,text/markdown,application/zip"
+            multiple
+            hidden
+            onChange={e => {
+              onImport(e.target.files)
+              if (importInput.current) importInput.current.value = ''
+            }}
+          />
+        </div>
+        <NotebookFolder />
+        <ThemePicker />
       </div>
-      <NotebookFolder />
-      <ThemePicker />
     </aside>
   )
 }

@@ -49,50 +49,55 @@ aside {
   flex-shrink: 0;
   background: var(--side);
   border-right: 1px solid var(--line);
-  padding: 12px 8px;
+  padding: 16px 12px 12px;
+  font-size: 12px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
 .search {
-  width: 100%;
-  border: 1px solid var(--line);
-  background: var(--bg);
-  border-radius: var(--radius);
-  padding: 5px 9px;
-  margin-bottom: 10px;
-  outline: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  height: 36px;
+  margin-bottom: 12px;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--text) 5%, transparent);
+  border: 1px solid transparent;
+  border-radius: calc(var(--radius) * 1.5);
 }
-.search:focus { border-color: var(--accent); }
+.search input { flex: 1; min-width: 0; height: 100%; border: none; background: none; outline: none; font: 12.5px var(--font-mono); }
+.search input::placeholder { color: var(--muted); }
+.search:focus-within { border-color: var(--accent); color: var(--text); }
 
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 3px 10px;
-  border-radius: 5px;
+  gap: 12px;
+  padding: 6px 12px;
+  border-radius: calc(var(--radius) * 1.5);
   cursor: pointer;
+  color: color-mix(in srgb, var(--text) 90%, var(--accent));
 }
-.nav-item:hover { background: color-mix(in srgb, var(--text) 7%, transparent); }
-.nav-item.active { background: color-mix(in srgb, var(--accent) 16%, transparent); }
+.nav-item:hover { background: color-mix(in srgb, var(--text) 5%, transparent); }
+.nav-item.active { background: color-mix(in srgb, var(--text) 9%, transparent); color: var(--text); }
 .nav-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.todos-link { font-weight: 600; margin-bottom: 6px; }
 .badge {
-  background: var(--danger);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 600;
-  border-radius: 10px;
-  padding: 0 7px;
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+  color: var(--text);
+  font: 600 12px var(--font-mono);
+  border-radius: 999px;
+  padding: 2px 9px;
 }
 .section-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 10px 4px;
-  font-size: 12px;
+  padding: 18px 12px 6px;
+  font: 11px var(--font-mono);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   color: var(--muted);
 }
 .mini {
