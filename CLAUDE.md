@@ -121,7 +121,7 @@ Traps: (1) don't put an SVG `transform="rotate(a cx cy)"` on an element that als
 Per-person view settings live in `src/ui/display.ts` (page width today), stored under `npkn.*` and applied
 as a `data-*` attribute on `<html>` in `main.tsx` before first paint. They are not part of a theme (themes
 are shareable data) and not part of a notebook (they differ per device). Width is the CSS variable
-`--page-width`, read by `.page` and `.todos`; Ask and Settings keep their own fixed widths.
+`--page-width`, read by `.page` and `.todos` (Todos floors it at 1100px because it is a table beside a filter rail); Ask and Settings keep their own fixed widths.
 
 ## App icon
 

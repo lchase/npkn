@@ -1,57 +1,42 @@
-/* ---- todos view ---- */
-.todos h1 { margin: 0 0 12px; }
-.filters { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 20px; }
-.filters button {
-  border: 1px solid var(--line);
-  background: none;
-  border-radius: 999px;
-  padding: 1px 12px;
-  font-size: 13px;
+/* ---- todos view: a filter rail beside a table, grouped under due-date (or status) headers ---- */
+/* Wider than a note: the table needs room. Still follows the width preference when that is larger. */
+.todos { max-width: max(var(--page-width), 1100px); }
+.todos h1 { margin: 0 0 16px; }
+.todos-body { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 28px; align-items: start; }
+
+.todos-rail { position: sticky; top: 0; display: flex; flex-direction: column; gap: 20px; }
+.seg { display: flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.seg button { flex: 1; border: none; background: none; padding: 3px 8px; font-size: 12px; white-space: nowrap; }
+.seg button.on { background: var(--text); color: var(--bg); }
+.facet h4 { margin: 0 0 6px; font: 11px var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.facet button {
+  display: flex; align-items: center; justify-content: space-between; width: 100%;
+  padding: 3px 6px; border: none; background: none; border-radius: var(--radius); text-align: left;
 }
-.filters button.on { background: var(--text); color: var(--bg); border-color: var(--text); }
-.done-toggle { margin-left: auto; font-size: 13px; color: var(--muted); }
-.todos h3 {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--muted);
-  margin: 24px 0 6px;
+.facet button:hover { background: color-mix(in srgb, var(--text) 6%, transparent); }
+.facet button.on { background: color-mix(in srgb, var(--text) 12%, transparent); }
+.facet em { font: 11px var(--font-mono); color: var(--muted); font-style: normal; }
+.done-toggle { font-size: 13px; color: var(--muted); }
+
+.todos-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.todos-table thead th {
+  text-align: left; padding: 4px 10px; border-bottom: 1px solid var(--line);
+  font: 11px var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 400;
 }
-.todos h3 span { opacity: 0.6; margin-left: 4px; }
-.todos h3.overdue { color: var(--danger); }
-.todo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 0;
-  border-bottom: 1px solid var(--line);
+.todos-table td { padding: 6px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.todos-table .chk { width: 28px; padding-right: 0; }
+.todos-table tbody:not(:first-of-type) .sect th { padding-top: 26px; }
+.sect th {
+  text-align: left; padding: 14px 10px 6px; border-bottom: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
+  font: 600 12px var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
 }
-.todo.checked .todo-text { color: var(--muted); text-decoration: line-through; }
-.todo-text { flex: 1; min-width: 0; }
+.sect th span { opacity: 0.6; margin-left: 4px; font-weight: 400; }
+.sect.overdue th { color: var(--danger); border-bottom-color: color-mix(in srgb, var(--danger) 40%, transparent); }
+.todos-table tbody tr:not(.sect):hover { background: color-mix(in srgb, var(--text) 4%, transparent); }
+tr.checked .todo-text { color: var(--muted); text-decoration: line-through; }
+.todos-table td .chip + .chip, .todos-table td span + span .chip { margin-left: 4px; }
 .src {
-  border: none;
-  background: none;
-  color: var(--muted);
-  font-size: 12px;
-  max-width: 140px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  border: none; background: none; color: var(--muted); font-size: 12px; max-width: 160px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .src:hover { color: var(--accent); text-decoration: underline; }
-
-.todos-controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
-.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
-.seg button { border: none; background: none; padding: 1px 14px; font-size: 13px; }
-.seg button.on { background: var(--text); color: var(--bg); }
-.filters { margin-bottom: 8px; }
-.filters-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); min-width: 44px; }
-/* Filter buttons for labels pick up the same configured colors as the chips themselves. */
-.filters button.filter-cat, .filters button.filter-status {
-  background: var(--chip-bg, hsl(var(--h, 0) var(--chip-bg-sat) var(--chip-bg-l)));
-  color: var(--chip-fg, hsl(var(--h, 0) var(--chip-fg-sat) var(--chip-fg-l)));
-  border-color: transparent;
-}
-.filters button.filter-status { font-weight: 600; }
-.filters button.filter-cat.on, .filters button.filter-status.on { outline: 2px solid var(--text); outline-offset: 1px; }
-.done-toggle { margin-left: 0; }

@@ -73,11 +73,21 @@ export function TodosView({ pages, onOpen }: { pages: Page[]; onOpen: (id: strin
   const all = useMemo(() => extractTodos(pages, registry), [pages, registry])
   const order = useMemo(() => statusList(registry).map(s => s.label), [registry])
 
-  const categories = useMemo(() => [...new Set(all.flatMap(t => t.categories))].sort(), [all])
-  const statuses = useMemo(() => {
-    const used = new Set(all.flatMap(t => (t.status ? [t.status.label.toLowerCase()] : [])))
-    return order.filter(s => used.has(s))
-  }, [all, order])
+  const facets = useMemo(() => {
+    const open = all.filter(t => showDone || !t.closed)
+    const tally = (pick: (t: Todo) => string[]) => {
+      const m = new Map<string, number>()
+      for (const t of open) for (const k of pick(t)) m.set(k, (m.get(k) ?? 0) + 1)
+      return m
+    }
+    const st = tally(t => (t.status ? [t.status.label.toLowerCase()] : []))
+    const cats = tally(t => t.categories)
+    return {
+      // Statuses keep the registry's order (to do, doing, done...); labels go most-used first.
+      statuses: order.filter(s => st.has(s)).map(s => [s, st.get(s)!] as const),
+      labels: [...cats].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])),
+    }
+  }, [all, order, showDone])
 
   const visible = all.filter(
     t =>
@@ -93,80 +103,92 @@ export function TodosView({ pages, onOpen }: { pages: Page[]; onOpen: (id: strin
     await updatePage(page.id, { content: setTodoClosed(page, t.index, !t.closed, registry) })
   }
 
+  const chip = (label: string) => (
+    <span className="chip chip-category" data-label={label.toLowerCase()} style={{ ['--h' as any]: hueFor(label) }}>
+      {label}
+    </span>
+  )
+
   return (
     <div className="todos">
       <h1>Todos</h1>
 
-      <div className="todos-controls">
-        <div className="seg" role="group" aria-label="Group by">
-          <button className={by === 'date' ? 'on' : ''} onClick={() => setBy('date')}>By date</button>
-          <button className={by === 'status' ? 'on' : ''} onClick={() => setBy('status')}>By status</button>
-        </div>
-        <label className="done-toggle">
-          <input type="checkbox" checked={showDone} onChange={e => setShowDone(e.target.checked)} /> show done
-        </label>
-      </div>
+      <div className="todos-body">
+        <div className="todos-rail">
+          <div className="seg" role="group" aria-label="Group by">
+            <button className={by === 'date' ? 'on' : ''} onClick={() => setBy('date')}>By date</button>
+            <button className={by === 'status' ? 'on' : ''} onClick={() => setBy('status')}>By status</button>
+          </div>
 
-      {statuses.length > 0 && (
-        <div className="filters">
-          <span className="filters-label">Status</span>
-          <button className={!status ? 'on' : ''} onClick={() => setStatus(null)}>Any</button>
-          {statuses.map(s => (
-            <button
-              key={s}
-              className={'filter-status' + (status === s ? ' on' : '')}
-              data-label={s}
-              onClick={() => setStatus(status === s ? null : s)}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
-      )}
-
-      <div className="filters">
-        <span className="filters-label">Label</span>
-        <button className={!cat ? 'on' : ''} onClick={() => setCat(null)}>All</button>
-        {categories.map(c => (
-          <button
-            key={c}
-            className={'filter-cat' + (cat === c ? ' on' : '')}
-            data-label={c.toLowerCase()}
-            style={{ ['--h' as any]: hueFor(c) }}
-            onClick={() => setCat(cat === c ? null : c)}
-          >
-            {c}
-          </button>
-        ))}
-      </div>
-
-      {sections.length === 0 && <p className="empty">Nothing here. Add a todo in any page with <code>[]</code>.</p>}
-
-      {sections.map(g => (
-        <section key={g.key}>
-          <h3 className={g.tone === 'overdue' ? 'overdue' : ''}>
-            {g.label} <span>{g.items.length}</span>
-          </h3>
-          {g.items.map(t => (
-            <div key={t.pageId + t.index} className={'todo' + (t.closed ? ' checked' : '')}>
-              <input type="checkbox" checked={t.closed} onChange={() => toggle(t)} />
-              <span className="todo-text">{t.text || <em>untitled</em>}</span>
-              {t.status && (
-                <span className="chip chip-category" data-label={t.status.label.toLowerCase()} style={{ ['--h' as any]: hueFor(t.status.label) }}>
-                  {t.status.label}
-                </span>
-              )}
-              {t.categories.map(c => (
-                <span key={c} className="chip chip-category" data-label={c.toLowerCase()} style={{ ['--h' as any]: hueFor(c) }}>
-                  {c}
-                </span>
+          {facets.statuses.length > 0 && (
+            <div className="facet">
+              <h4>Status</h4>
+              {facets.statuses.map(([s, n]) => (
+                <button key={s} className={status === s ? 'on' : ''} onClick={() => setStatus(status === s ? null : s)}>
+                  {chip(s)}
+                  <em>{n}</em>
+                </button>
               ))}
-              {t.date && <span className={'chip chip-date' + (isOverdue(t.date) ? ' overdue' : '')}>{relativeLabel(t.date)}</span>}
-              <button className="src" onClick={() => onOpen(t.pageId)}>{t.pageTitle}</button>
             </div>
-          ))}
-        </section>
-      ))}
+          )}
+
+          {facets.labels.length > 0 && (
+            <div className="facet">
+              <h4>Labels</h4>
+              {facets.labels.map(([c, n]) => (
+                <button key={c} className={cat === c ? 'on' : ''} onClick={() => setCat(cat === c ? null : c)}>
+                  {chip(c)}
+                  <em>{n}</em>
+                </button>
+              ))}
+            </div>
+          )}
+
+          <label className="done-toggle">
+            <input type="checkbox" checked={showDone} onChange={e => setShowDone(e.target.checked)} /> show done
+          </label>
+        </div>
+
+        <div className="todos-main">
+          {sections.length === 0 && <p className="empty">Nothing here. Add a todo in any page with <code>[]</code>.</p>}
+          {sections.length > 0 && (
+            <table className="todos-table">
+              <thead>
+                <tr>
+                  <th className="chk" />
+                  <th>Task</th>
+                  <th>Labels</th>
+                  <th>Due</th>
+                  <th>Page</th>
+                </tr>
+              </thead>
+              {sections.map(g => (
+                <tbody key={g.key}>
+                  <tr className={'sect' + (g.tone === 'overdue' ? ' overdue' : '')}>
+                    <th colSpan={5}>
+                      {g.label} <span>{g.items.length}</span>
+                    </th>
+                  </tr>
+                  {g.items.map(t => (
+                    <tr key={t.pageId + t.index} className={t.closed ? 'checked' : ''}>
+                      <td className="chk"><input type="checkbox" checked={t.closed} onChange={() => toggle(t)} /></td>
+                      <td className="todo-text">{t.text || <em>untitled</em>}</td>
+                      <td>
+                        {t.status && chip(t.status.label)}
+                        {t.categories.map(c => <span key={c}>{chip(c)}</span>)}
+                      </td>
+                      <td>
+                        {t.date && <span className={'chip chip-date' + (isOverdue(t.date) ? ' overdue' : '')}>{relativeLabel(t.date)}</span>}
+                      </td>
+                      <td><button className="src" onClick={() => onOpen(t.pageId)}>{t.pageTitle}</button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              ))}
+            </table>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
