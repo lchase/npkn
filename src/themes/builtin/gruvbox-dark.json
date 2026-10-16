@@ -1,0 +1,29 @@
+{
+  "id": "gruvbox-dark",
+  "name": "Gruvbox Dark",
+  "scheme": "dark",
+  "author": "morhetz (palette), npkn",
+  "vars": {
+    "bg": "#282828",
+    "side": "#1d2021",
+    "text": "#ebdbb2",
+    "muted": "#928374",
+    "line": "#504945",
+    "accent": "#83a598",
+    "danger": "#fb4934",
+    "code-bg": "#32302f",
+    "chip-bg-sat": "25%",
+    "chip-bg-l": "26%",
+    "chip-fg-sat": "45%",
+    "chip-fg-l": "72%",
+    "syn-comment": "#928374",
+    "syn-keyword": "#fb4934",
+    "syn-string": "#b8bb26",
+    "syn-number": "#d3869b",
+    "syn-function": "#8ec07c",
+    "syn-type": "#fabd2f",
+    "syn-variable": "#83a598",
+    "syn-meta": "#fe8019",
+    "syn-punct": "#a89984"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "id": "gruvbox-light",
+  "name": "Gruvbox Light",
+  "scheme": "light",
+  "author": "morhetz (palette), npkn",
+  "vars": {
+    "bg": "#fbf1c7",
+    "side": "#f2e5bc",
+    "text": "#3c3836",
+    "muted": "#7c6f64",
+    "line": "#d5c4a1",
+    "accent": "#076678",
+    "danger": "#9d0006",
+    "code-bg": "#ebdbb2",
+    "chip-bg-sat": "50%",
+    "chip-bg-l": "80%",
+    "chip-fg-sat": "60%",
+    "chip-fg-l": "26%",
+    "syn-comment": "#928374",
+    "syn-keyword": "#9d0006",
+    "syn-string": "#79740e",
+    "syn-number": "#8f3f71",
+    "syn-function": "#427b58",
+    "syn-type": "#b57614",
+    "syn-variable": "#076678",
+    "syn-meta": "#af3a03",
+    "syn-punct": "#7c6f64"
+  }
+}

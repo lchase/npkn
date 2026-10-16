@@ -1,0 +1,23 @@
+/* ---- chips ---- */
+.chip {
+  display: inline-block;
+  font-size: 0.82em;
+  line-height: 1.5;
+  font-weight: 500;
+  padding: 0 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  vertical-align: 1px;
+}
+.chip-category {
+  /* --chip-bg / --chip-fg are set per label by the generated label stylesheet; otherwise auto from the name. */
+  background: var(--chip-bg, hsl(var(--h) var(--chip-bg-sat) var(--chip-bg-l)));
+  color: var(--chip-fg, hsl(var(--h) var(--chip-fg-sat) var(--chip-fg-l)));
+}
+.chip-category::before { content: '#'; opacity: 0.55; margin-right: 1px; }
+.chip-date { background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); }
+.chip-date::before { content: '◷ '; }
+.chip-date.overdue { background: color-mix(in srgb, var(--danger) 15%, transparent); color: var(--danger); }
+
+/* chips can sit directly against each other (a status right after a date), so keep a gap */
+.chip + .chip { margin-left: 4px; }

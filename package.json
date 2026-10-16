@@ -1,0 +1,72 @@
+{
+  "name": "npkn",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5173",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview",
+    "desktop": "node desktop/setup.cjs && npm run build && electron desktop/main.cjs",
+    "desktop:dev": "node desktop/setup.cjs && NPKN_DEV_URL=http://localhost:5173 electron desktop/main.cjs",
+    "desktop:pack": "node desktop/setup.cjs && npm run build && electron-builder --dir",
+    "test": "vitest run",
+    "test:desktop": "node desktop/setup.cjs && npm run build && node desktop/test/sync.e2e.mjs",
+    "test:browser": "node desktop/setup.cjs && node desktop/test/browser-sync.e2e.mjs",
+    "icons": "node desktop/setup.cjs && electron scripts/make-icons.cjs"
+  },
+  "dependencies": {
+    "@tiptap/core": "^2.10.0",
+    "@tiptap/extension-code-block-lowlight": "^2.27.3",
+    "@tiptap/extension-link": "^2.27.3",
+    "@tiptap/extension-placeholder": "^2.10.0",
+    "@tiptap/extension-task-item": "^2.10.0",
+    "@tiptap/extension-task-list": "^2.10.0",
+    "@tiptap/react": "^2.10.0",
+    "@tiptap/starter-kit": "^2.10.0",
+    "@tiptap/suggestion": "^2.27.3",
+    "dexie": "^4.0.10",
+    "dexie-react-hooks": "^1.1.7",
+    "lowlight": "^3.3.0",
+    "marked": "^14.1.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "yaml": "^2.9.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^33.4.11",
+    "electron-builder": "^25.1.8",
+    "happy-dom": "^15.11.7",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.9"
+  },
+  "description": "Stripped-down, local-first notes with rolled-up todos and an Ask-your-notes chat",
+  "main": "desktop/main.cjs",
+  "build": {
+    "appId": "dev.npkn.app",
+    "productName": "npkn",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**",
+      "desktop/main.cjs",
+      "desktop/preload.cjs",
+      "desktop/notebook.cjs",
+      "desktop/icon.png",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        "dir"
+      ],
+      "icon": "desktop/icon.icns"
+    }
+  }
+}

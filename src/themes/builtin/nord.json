@@ -1,0 +1,31 @@
+{
+  "id": "nord",
+  "name": "Nord",
+  "scheme": "dark",
+  "author": "npkn",
+  "vars": {
+    "bg": "#2e3440",
+    "side": "#292e39",
+    "text": "#d8dee9",
+    "muted": "#7b88a1",
+    "line": "#3b4252",
+    "accent": "#88c0d0",
+    "danger": "#bf616a",
+    "code-bg": "#3b4252",
+    "chip-bg-sat": "28%",
+    "chip-bg-l": "30%",
+    "chip-fg-sat": "45%",
+    "chip-fg-l": "82%",
+    "font-heading": "Georgia, 'Times New Roman', serif",
+    "radius": "4px",
+    "syn-comment": "#616e88",
+    "syn-keyword": "#81a1c1",
+    "syn-string": "#a3be8c",
+    "syn-number": "#b48ead",
+    "syn-function": "#88c0d0",
+    "syn-type": "#8fbcbb",
+    "syn-variable": "#d8dee9",
+    "syn-meta": "#d08770",
+    "syn-punct": "#9aa5b8"
+  }
+}

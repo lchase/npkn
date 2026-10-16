@@ -1,0 +1,32 @@
+/* ---- theme picker ---- */
+.theme-picker {
+  margin-top: auto;
+  padding: 14px 10px 4px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--muted);
+}
+.theme-picker label { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.theme-picker select {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 2px 4px;
+}
+.linklike { background: none; border: none; padding: 6px 0 0; color: var(--muted); font-size: 12px; text-decoration: underline; }
+.linklike:hover { color: var(--accent); }
+.theme-error { color: var(--danger); margin: 6px 0 0; }
+
+.theme-row { display: inline-flex; align-items: center; gap: 4px; }
+.theme-flip {
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 4px;
+  width: 24px;
+  height: 22px;
+  line-height: 1;
+  padding: 0;
+}
+.theme-flip:hover { border-color: var(--accent); color: var(--accent); }

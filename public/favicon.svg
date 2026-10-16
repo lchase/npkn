@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="215 130 594 780" width="1024" height="1024"><defs>
+  <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2d3040"/><stop offset="1" stop-color="#14151c"/></linearGradient>
+  <linearGradient id="page" x1="0.1" y1="0" x2="0.9" y2="1"><stop offset="0" stop-color="#ff9277"/><stop offset="0.5" stop-color="#ff6b4a"/><stop offset="1" stop-color="#d9482b"/></linearGradient>
+  <filter id="lift" x="-10%" y="-10%" width="120%" height="125%"><feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#000" flood-opacity="0.38"/></filter></defs>
+  <ellipse cx="512" cy="872" rx="238" ry="26" fill="#000" opacity="0.26"/>
+  <path d="M318 180 H604 L754 330 V796 a48 48 0 0 1 -48 48 H318 a48 48 0 0 1 -48 -48 V228 a48 48 0 0 1 48 -48 Z" fill="#a8331d" transform="translate(0 26)"/>
+  <path d="M318 180 H604 L754 330 V796 a48 48 0 0 1 -48 48 H318 a48 48 0 0 1 -48 -48 V228 a48 48 0 0 1 48 -48 Z" fill="url(#page)"/>
+  <path d="M604 180 V282 a48 48 0 0 0 48 48 H754 Z" fill="#ffe3d9"/>
+  <path d="M604 180 V282 a48 48 0 0 0 48 48 H754 Z" fill="#000" opacity="0.1"/>
+  <g fill="#fff">
+    <rect x="344" y="470" width="336" height="48" rx="24"/>
+    <rect x="344" y="588" width="336" height="48" rx="24"/>
+    <rect x="344" y="706" width="206" height="48" rx="24"/>
+  </g>
+  <!-- the label chip: the app's own @label pill, sitting on the first line -->
+  <rect x="344" y="388" width="170" height="58" rx="29" fill="#14b8a6"/>
+  <circle cx="378" cy="417" r="10" fill="#fff"/></svg>

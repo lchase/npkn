@@ -1,0 +1,33 @@
+{
+  "id": "paper",
+  "name": "Paper",
+  "scheme": "light",
+  "author": "npkn",
+  "vars": {
+    "bg": "#ffffff",
+    "side": "#f7f6f3",
+    "text": "#2b2a28",
+    "muted": "#8a8780",
+    "line": "#e8e6e1",
+    "accent": "#2f6fed",
+    "danger": "#c4372c",
+    "code-bg": "#f3f1ec",
+    "chip-bg-sat": "70%",
+    "chip-bg-l": "90%",
+    "chip-fg-sat": "55%",
+    "chip-fg-l": "28%",
+    "font-body": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    "font-heading": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    "font-mono": "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
+    "radius": "6px",
+    "syn-comment": "#8a8780",
+    "syn-keyword": "#cf222e",
+    "syn-string": "#0a3069",
+    "syn-number": "#0550ae",
+    "syn-function": "#8250df",
+    "syn-type": "#953800",
+    "syn-variable": "#116329",
+    "syn-meta": "#9a6700",
+    "syn-punct": "#57606a"
+  }
+}

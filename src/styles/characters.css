@@ -1,0 +1,143 @@
+/* ---- dots (characters) ----
+   One shape + two pill eyes. Everything animates via transforms on the svg's groups.
+   Colour comes from the preset (--dot), so characters look the same in every theme. */
+.avatar { overflow: visible; flex-shrink: 0; }
+.dot-fill { fill: var(--dot); }
+.dot-base { fill: color-mix(in oklab, var(--dot) 64%, black); }
+.dot-gloss { fill: #fff; opacity: 0.38; }
+.dot-bounce { fill: #fff; opacity: 0.16; }
+.dot-eye { filter: drop-shadow(0 1.5px 0 color-mix(in oklab, var(--dot) 55%, black)); }
+.look-flat .dot-eye { filter: none; }
+.dot-shadow { fill: color-mix(in srgb, #000 17%, transparent); transform-box: fill-box; transform-origin: center; }
+/* On dark themes a black shadow vanishes; a soft glow in the character's own colour grounds it instead. */
+:root[data-scheme='dark'] .dot-shadow { fill: color-mix(in srgb, var(--dot) 34%, transparent); }
+
+/* Edge guard: a faint rim so any picked colour keeps an outline (black on dark, pale on light). */
+:root[data-scheme='dark'] .dot-fill { stroke: color-mix(in oklab, var(--dot) 55%, white); stroke-opacity: 0.4; stroke-width: 2; }
+:root[data-scheme='light'] .dot-fill { stroke: color-mix(in oklab, var(--dot) 65%, black); stroke-opacity: 0.28; stroke-width: 2; }
+.dot-eye { fill: var(--eye, #fff); }
+.dot-happy path { fill: none; stroke: var(--eye, #fff); stroke-width: 8; stroke-linecap: round; }
+.dot-mouth { fill: var(--eye, #fff); }
+.dot-thought circle { fill: var(--dot); opacity: 0.55; animation: dot-pulse 1.2s ease-in-out infinite; }
+.dot-thought circle:nth-child(2) { animation-delay: 0.2s; }
+.dot-thought circle:nth-child(3) { animation-delay: 0.4s; }
+.dot-sweat { fill: #8fd0ff; stroke: #0e0e12; stroke-width: 2; animation: dot-pulse 1.6s ease-in-out infinite; }
+.dot-sparkles path { fill: #ffd54a; stroke: #0e0e12; stroke-width: 2.5; stroke-linejoin: round; transform-box: fill-box; transform-origin: center; animation: dot-pop 0.9s ease-out; }
+
+/* antenna: lags the body, glows while the assistant is working */
+.dot-stalk { fill: none; stroke: color-mix(in oklab, var(--dot) 70%, black); stroke-width: 5; stroke-linecap: round; }
+.dot-tip { fill: color-mix(in oklab, var(--dot) 62%, white); stroke: color-mix(in oklab, var(--dot) 70%, black); stroke-width: 3; }
+.dot-tip-gloss { fill: #fff; opacity: 0.7; }
+.look-flat .dot-tip { fill: var(--dot); }
+.dot-antenna { transform-box: view-box; transform-origin: 116px 90px; animation: dot-wag 3.6s ease-in-out infinite; }
+.dot.thinking .dot-antenna { animation: dot-wag 1.6s ease-in-out infinite; }
+.dot.thinking .dot-tip, .dot.talking .dot-tip { animation: dot-glow 0.9s ease-in-out infinite; }
+.dot.talking .dot-antenna { animation: dot-wag 0.5s ease-in-out infinite; }
+.dot.happy .dot-antenna { animation: dot-wag 0.3s ease-in-out 4; }
+.dot.error .dot-antenna { animation: none; transform: rotate(46deg); transition: transform 0.4s; }
+@keyframes dot-wag { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(7deg); } }
+@keyframes dot-glow { 0%, 100% { filter: none; } 50% { filter: drop-shadow(0 0 5px color-mix(in oklab, var(--dot) 40%, white)) brightness(1.25); } }
+
+/* gaze and lean follow the cursor via --lx/--ly (set by useAvatar) */
+.dot .dot-lean {
+  transform-origin: 100px 172px;
+  transform: translate(calc(var(--lx, 0) * 6px), calc(var(--ly, 0) * 3px)) rotate(calc(var(--lx, 0) * 4deg));
+  transition: transform 0.25s ease-out;
+}
+.dot .g-look {
+  transform: translate(calc(var(--lx, 0) * 9px), calc(var(--ly, 0) * 7px));
+  transition: transform 0.14s ease-out;
+}
+.dot.thinking .g-look { transform: translate(-6px, -9px); }
+.dot .g-eye { transform-box: fill-box; transform-origin: center; transition: transform 0.07s; }
+.dot.blink .g-eye { transform: scaleY(0.08); }
+
+/* body motion: squash and stretch from the ground line */
+.dot .dot-anim { transform-box: view-box; transform-origin: 100px 172px; animation: dot-idle 3.4s ease-in-out infinite; }
+.dot.talking .dot-anim { animation: dot-talk 0.46s ease-in-out infinite; }
+.dot.thinking .dot-anim { animation: dot-think 2.4s ease-in-out infinite; }
+.dot.happy .dot-anim { animation: dot-jump 0.55s ease-out 2; }
+.dot.error .dot-anim { animation: dot-droop 0.5s ease-out 1 forwards; }
+
+@keyframes dot-idle { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.025, 0.972); } }
+@keyframes dot-talk { 0%, 100% { transform: scale(1.04, 0.95); } 50% { transform: scale(0.97, 1.05); } }
+@keyframes dot-think { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg) scale(1.02, 0.98); } }
+@keyframes dot-jump { 0% { transform: scale(1.1, 0.88); } 40% { transform: translateY(-24px) scale(0.93, 1.1); } 100% { transform: scale(1, 1); } }
+@keyframes dot-droop { 0% { transform: translateX(0); } 20% { transform: translateX(-4px); } 40% { transform: translateX(4px); } 60% { transform: translateX(-2px); } 100% { transform: scale(1.05, 0.93); } }
+@keyframes dot-pulse { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+@keyframes dot-pop { 0% { transform: scale(0) rotate(-40deg); opacity: 0; } 60% { transform: scale(1.25) rotate(8deg); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .avatar, .avatar * { animation: none !important; transition: none !important; }
+}
+
+/* ---- character gallery ---- */
+.gallery {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--side);
+  padding: 12px 14px 14px;
+  margin-bottom: 14px;
+}
+.gallery-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.gallery-moods { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 12px; color: var(--muted); }
+.gallery-moods button {
+  border: 1px solid var(--line);
+  background: none;
+  border-radius: 999px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.gallery-opts { display: flex; align-items: center; gap: 14px; font-size: 12px; color: var(--muted); }
+.gallery-opts .chip-btn { border: 1px solid var(--line); background: none; border-radius: 999px; padding: 0 10px; font-size: 12px; }
+.gallery-opts .chip-btn.on { background: var(--text); color: var(--bg); border-color: var(--text); }
+.gallery-moods button.on { background: var(--text); color: var(--bg); border-color: var(--text); }
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 10px; }
+.gallery-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 6px 8px;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  background: var(--bg);
+  text-align: center;
+}
+.gallery-tile:hover { border-color: var(--line); }
+.gallery-tile.selected { border-color: var(--accent); }
+.gallery-tile .avatar { width: 100%; max-width: 96px; height: auto; }
+.gallery-tile strong { font-size: 13px; margin-top: 4px; }
+.gallery-tile span { font-size: 11px; color: var(--muted); line-height: 1.25; }
+
+/* gallery tile: pick button + colour footer */
+.gallery-tile { padding: 0; }
+.gallery-pick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 6px 4px;
+  background: none;
+  border: none;
+  text-align: center;
+}
+.gallery-color { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 2px 0 8px; font-size: 11px; color: var(--muted); }
+.gallery-color input[type='color'] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 2px solid var(--line);
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  overflow: hidden;
+}
+.gallery-color input[type='color']::-webkit-color-swatch-wrapper { padding: 0; }
+.gallery-color input[type='color']::-webkit-color-swatch { border: none; border-radius: 50%; }
+.gallery-color input[type='color']::-moz-color-swatch { border: none; border-radius: 50%; }
+.gallery-color .linklike { padding: 0; font-size: 11px; }
