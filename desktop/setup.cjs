@@ -11,7 +11,33 @@ const pkg = path.join(root, 'node_modules', 'electron')
 const marker = path.join(pkg, 'path.txt')
 
 const ready = () => fs.existsSync(marker) && fs.existsSync(path.join(pkg, 'dist'))
-if (ready()) process.exit(0)
+
+// macOS takes the Dock tooltip and menu-bar name from the bundle's Info.plist, which app.setName()
+// can't change. Rename the dev bundle so `npm run desktop` shows "npkn" instead of "Electron".
+// Packaged builds already get productName. Re-signs ad hoc because editing the plist voids the seal.
+function nameDevBundle() {
+  if (process.platform !== 'darwin') return
+  const app = path.join(pkg, 'dist', 'Electron.app')
+  const plist = path.join(app, 'Contents', 'Info.plist')
+  if (!fs.existsSync(plist)) return
+  const read = key => {
+    try {
+      return execFileSync('plutil', ['-extract', key, 'raw', '-o', '-', plist], { encoding: 'utf8' }).trim()
+    } catch {
+      return ''
+    }
+  }
+  if (read('CFBundleDisplayName') === 'npkn' && read('CFBundleName') === 'npkn') return
+  for (const key of ['CFBundleName', 'CFBundleDisplayName']) {
+    execFileSync('plutil', ['-replace', key, '-string', 'npkn', plist])
+  }
+  execFileSync('codesign', ['--force', '--deep', '--sign', '-', app], { stdio: 'ignore' })
+}
+
+if (ready()) {
+  nameDevBundle()
+  process.exit(0)
+}
 
 const run = () => execFileSync('node', [path.join(pkg, 'install.js')], { stdio: 'inherit' })
 try {
@@ -40,4 +66,5 @@ fs.mkdirSync(path.join(pkg, 'dist'), { recursive: true })
 execFileSync('unzip', ['-q', zip, '-d', path.join(pkg, 'dist')], { stdio: 'inherit' })
 fs.writeFileSync(marker, 'Electron.app/Contents/MacOS/Electron')
 fs.writeFileSync(path.join(pkg, 'dist', 'version'), version)
+nameDevBundle()
 console.log('Electron ready:', version)
