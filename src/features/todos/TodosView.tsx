@@ -5,6 +5,23 @@ import { GROUP_LABEL, registryFromPages, statusList, type Group } from '../../co
 import { extractTodos, setTodoClosed, type Todo } from '../../core/todos'
 import { isOverdue, relativeLabel, toISO } from '../../core/dates'
 import { hueFor } from '../../editor/chip'
+// PROTOTYPE: layout options for this page, switched with ?variant=A|B|C (dev builds only). Remove with ./prototype.
+import './prototype/prototype.css'
+import { PrototypeSwitcher } from './prototype/PrototypeSwitcher'
+import * as A from './prototype/VariantA'
+import * as B from './prototype/VariantB'
+import * as C from './prototype/VariantC'
+
+const VARIANTS = [
+  { id: 'current', label: 'Current' },
+  { id: 'A', label: A.name },
+  { id: 'B', label: B.name },
+  { id: 'C', label: C.name },
+]
+const readVariant = () => {
+  const v = new URLSearchParams(location.search).get('variant') ?? 'current'
+  return VARIANTS.some(x => x.id === v) ? v : 'current'
+}
 
 type Section = { key: string; label: string; items: Todo[]; tone?: 'overdue' }
 type By = 'date' | 'status'
@@ -59,6 +76,13 @@ export function TodosView({ pages, onOpen }: { pages: Page[]; onOpen: (id: strin
   const [status, setStatus] = useState<string | null>(null)
   const [showDone, setShowDone] = useState(false)
   const [by, setByState] = useState<By>(loadBy)
+  const [variant, setVariantState] = useState(import.meta.env.DEV ? readVariant : () => 'current')
+  const setVariant = (v: string) => {
+    setVariantState(v)
+    const u = new URL(location.href)
+    u.searchParams.set('variant', v)
+    history.replaceState(null, '', u)
+  }
 
   const setBy = (b: By) => {
     setByState(b)
@@ -93,8 +117,23 @@ export function TodosView({ pages, onOpen }: { pages: Page[]; onOpen: (id: strin
     await updatePage(page.id, { content: setTodoClosed(page, t.index, !t.closed, registry) })
   }
 
+  const proto = { todos: all, onToggle: toggle, onOpen }
+  const wide = (variant === 'B' && B.wide) || (variant === 'C' && C.wide)
+  if (variant !== 'current') {
+    return (
+      <div className={'todos' + (wide ? ' pv-wide' : '')}>
+        <h1>Todos</h1>
+        {variant === 'A' && <A.VariantA {...proto} />}
+        {variant === 'B' && <B.VariantB {...proto} />}
+        {variant === 'C' && <C.VariantC {...proto} />}
+        <PrototypeSwitcher variants={VARIANTS} current={variant} onChange={setVariant} />
+      </div>
+    )
+  }
+
   return (
     <div className="todos">
+      {import.meta.env.DEV && <PrototypeSwitcher variants={VARIANTS} current={variant} onChange={setVariant} />}
       <h1>Todos</h1>
 
       <div className="todos-controls">

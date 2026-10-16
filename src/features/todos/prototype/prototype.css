@@ -1,0 +1,59 @@
+/* PROTOTYPE: throwaway styles for the Todos layouts. Delete with the folder. */
+.todos.pv-wide { max-width: none; }
+
+.pv-switcher {
+  position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 50;
+  display: flex; align-items: center; gap: 14px; padding: 6px 8px;
+  background: #111; color: #fff; border-radius: 999px; box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  font: 13px var(--font-mono);
+}
+.pv-switcher button { width: 28px; height: 28px; border: none; border-radius: 50%; background: #333; color: #fff; }
+.pv-switcher button:hover { background: #555; }
+.pv-switcher em { font-style: normal; opacity: 0.65; }
+
+/* A: agenda */
+.pv-a-summary { color: var(--muted); margin: 0 0 18px; }
+.pv-a-summary strong { color: var(--text); }
+.pv-a-summary .bad, .pv-a .bad { color: var(--danger); }
+.pv-a-day, .pv-a-overdue { display: grid; grid-template-columns: 76px 1fr; gap: 16px; padding: 14px 0; border-top: 1px solid var(--line); }
+.pv-a-overdue { border-top-color: color-mix(in srgb, var(--danger) 40%, transparent); }
+.pv-a-day.today .pv-a-rail { color: var(--accent); }
+.pv-a-rail { display: flex; flex-direction: column; align-items: center; text-align: center; line-height: 1.1; gap: 2px; }
+.pv-a-big { font: 600 30px/1.1 var(--font-heading); }
+.pv-a-sub { font: 11px var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.pv-a-day.today .pv-a-sub { color: var(--accent); }
+.pv-a-row { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: var(--radius); }
+.pv-a-row:hover { background: color-mix(in srgb, var(--text) 5%, transparent); }
+.pv-a-text { flex: 1; min-width: 0; }
+
+/* B: board */
+.pv-b { display: grid; grid-template-columns: repeat(3, minmax(240px, 1fr)); gap: 16px; align-items: start; }
+.pv-b-col { background: color-mix(in srgb, var(--text) 3%, transparent); border-radius: calc(var(--radius) * 1.5); padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.pv-b-col h3 { margin: 0 0 4px; font: 12px var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.pv-b-col h3 span { opacity: 0.6; margin-left: 4px; }
+.pv-b-col.col-active h3 { color: var(--accent); }
+.pv-b-card { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
+.pv-b-card.closed { opacity: 0.55; }
+.pv-b-card.closed .pv-b-title span { text-decoration: line-through; }
+.pv-b-title { display: flex; gap: 8px; align-items: flex-start; cursor: pointer; }
+.pv-b-meta { display: flex; flex-wrap: wrap; gap: 4px; }
+.pv-b-meta .chip + .chip { margin-left: 0; }
+.pv-b-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.pv-b-empty { color: var(--muted); font-size: 13px; margin: 0; text-align: center; }
+
+/* C: table */
+.pv-c { display: grid; grid-template-columns: 190px 1fr; gap: 24px; align-items: start; }
+.pv-c .empty { grid-column: 2; }
+.pv-c-rail { position: sticky; top: 0; display: flex; flex-direction: column; gap: 18px; padding: 0; background: none; border: none; width: auto; overflow: visible; }
+.pv-c-facet h4 { margin: 0 0 6px; font: 11px var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.pv-c-facet button { display: flex; justify-content: space-between; width: 100%; padding: 4px 8px; border: none; background: none; border-radius: var(--radius); text-align: left; font-size: 13px; }
+.pv-c-facet button:hover { background: color-mix(in srgb, var(--text) 6%, transparent); }
+.pv-c-facet button.on { background: color-mix(in srgb, var(--accent) 16%, transparent); }
+.pv-c-facet em { font: 11px var(--font-mono); color: var(--muted); font-style: normal; }
+.pv-c-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.pv-c-table th { position: sticky; top: 0; background: var(--bg); text-align: left; font: 11px var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding: 6px 10px; border-bottom: 1px solid var(--line); cursor: pointer; user-select: none; }
+.pv-c-table th.on { color: var(--text); }
+.pv-c-table td { padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.pv-c-table .chk { width: 28px; cursor: default; }
+.pv-c-table tbody tr:hover { background: color-mix(in srgb, var(--text) 4%, transparent); }
+.pv-c-table tr.closed td { color: var(--muted); text-decoration: line-through; }
