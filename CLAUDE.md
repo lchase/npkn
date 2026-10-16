@@ -77,6 +77,7 @@ Dependencies point inward: `app` → `features`/`editor` → `data` → `core`.
 
 - Strict TypeScript. Avoid adding dependencies; the current set is small on purpose (`yaml`, `marked`, `lowlight`, TipTap, Dexie).
 - Styling: plain CSS in `src/styles/<area>.css`, ordered in `styles/index.css`. All colors/fonts come from theme tokens (CSS variables); never hardcode a color that should follow the theme. Adding a token: default in `styles/base.css` `:root`, add to `themes/builtin/paper.json` and `ink.json`, document in `docs/themes.md`.
+- Default dark theme (`ink.json`) follows `docs/design-ink.md` (Tactile Ink & Fiber): terracotta accent, warm charcoal surface stack, hairline borders, tonal layering over shadows. Check it before changing dark styling. Plus Jakarta Sans / JetBrains Mono are named first in the font stacks but not bundled; they apply only if installed, otherwise the system stack is used.
 - Themes are inert JSON data. Don't add anything to the format that executes code or loads URLs.
 - Comments explain why, not what. Match the surrounding density.
 
