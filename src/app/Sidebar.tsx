@@ -110,8 +110,10 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
 
   const tree = (parentId: string | null, depth = 0): React.ReactNode => {
     const siblings = byParent.get(parentId) ?? []
-    // Only reserve the chevron column when some sibling has children, so a flat list isn't indented.
-    const anyKids = siblings.some(p => byParent.has(p.id))
+    // Reserve the chevron column on every row once any page has children (not per sibling group),
+    // otherwise a leaf-only child level loses the column and renders left of its parent. A fully flat
+    // list stays unindented.
+    const anyKids = parents.length > 0
     return siblings.map(p => {
       const hasKids = byParent.has(p.id)
       const isCollapsed = hasKids && collapsed.has(p.id)
@@ -119,7 +121,7 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
         <div key={p.id}>
           <div
             className={'nav-item' + (view.kind === 'page' && view.id === p.id ? ' active' : '')}
-            style={{ paddingLeft: 4 + depth * 14 }}
+            style={{ paddingLeft: 4 + depth * 12 }}
             onClick={() => go({ kind: 'page', id: p.id })}
           >
             {hasKids ? (

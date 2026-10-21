@@ -1,7 +1,7 @@
 /* ---- sidebar extras ---- */
 .nav-avatar { display: inline-flex; flex: 0 0 18px; width: 18px; height: 18px; align-items: center; justify-content: center; overflow: visible; }
 .nav-avatar > * { flex: none; }
-.nav-glyph { display: inline-flex; flex: 0 0 18px; color: color-mix(in srgb, var(--text) 78%, var(--accent)); }
+.nav-glyph { display: inline-flex; flex: 0 0 18px; color: color-mix(in srgb, var(--text) 66%, var(--side)); }
 .nav-glyph .icon { width: 18px; height: 18px; }
 .nav-item .nav-glyph .icon { stroke-width: 1.6; }
 .nav-item.active .nav-glyph { color: var(--text); }
@@ -38,8 +38,8 @@
 .page-actions { display: flex; align-items: center; gap: 4px; }
 
 .nav-chevron {
-  flex: 0 0 22px;
-  width: 22px;
+  flex: 0 0 18px;
+  width: 18px;
   height: 22px;
   display: inline-flex;
   align-items: center;

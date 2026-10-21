@@ -75,11 +75,12 @@ aside {
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 6px 12px;
+  gap: 8px;
+  padding: 6px 8px;
   border-radius: calc(var(--radius) * 1.5);
   cursor: pointer;
-  color: color-mix(in srgb, var(--text) 90%, var(--accent));
+  /* Neutral dim of the text colour, not an accent mix: the tint read as peach beside the white active state. */
+  color: color-mix(in srgb, var(--text) 82%, var(--side));
 }
 .nav-item:hover { background: color-mix(in srgb, var(--text) 5%, transparent); }
 .nav-item.active { background: color-mix(in srgb, var(--text) 9%, transparent); color: var(--text); }
@@ -95,7 +96,7 @@ aside {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 18px 12px 6px;
+  padding: 18px 8px 6px;
   font: 11px var(--font-mono);
   text-transform: uppercase;
   letter-spacing: 0.06em;
