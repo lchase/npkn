@@ -92,6 +92,7 @@ function score(c: Case, text: string) {
 describe.skipIf(MODELS.length === 0)('Ask model benchmark', () => {
   it(
     'runs every model over every question',
+    { timeout: 60 * 60 * 1000 },
     async () => {
       const pages = buildSamplePages()
       const rows: Row[] = []
@@ -141,6 +142,5 @@ describe.skipIf(MODELS.length === 0)('Ask model benchmark', () => {
       console.table(summary)
       expect(rows.length).toBe(MODELS.length * RUNS * CASES.length)
     },
-    { timeout: 60 * 60 * 1000 },
   )
 })
