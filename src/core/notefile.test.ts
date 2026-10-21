@@ -115,6 +115,16 @@ describe('withId', () => {
   })
 })
 
+describe('withId on a file that already has ids', () => {
+  it('replaces them, so the file stays parseable (a copied conflict file carries its original id)', () => {
+    const src = '---\nid: "old"\ntype: note\nid: "older"\n---\n\nBody\n'
+    const out = withId(src, 'new')
+    expect(out).toBe('---\nid: "new"\ntype: note\n---\n\nBody\n')
+    expect(parseNoteFile(out, 'f.md').id).toBe('new')
+    expect(withId(out, 'again').match(/^id:/gm)).toHaveLength(1)
+  })
+})
+
 describe('planPaths', () => {
   const known = (entries: Record<string, KnownEntry>) => new Map(Object.entries(entries))
 

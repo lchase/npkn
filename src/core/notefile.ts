@@ -110,7 +110,12 @@ export function parseNoteFile(text: string, filename: string): ParsedNote {
 export function withId(text: string, id: string): string {
   const m = /^---\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)/.exec(text)
   const idLine = `id: ${JSON.stringify(id)}`
-  if (m) return text.slice(0, m.index) + `---\n${idLine}\n${m[1]}\n---\n` + text.slice(m.index + m[0].length)
+  if (m) {
+    // Drop any id lines already there (a copied file carries its original's). Two `id:` keys is a YAML
+    // error, which reads back as "no id", so the next sync would add yet another and spawn a page each time.
+    const rest = m[1].split(/\r?\n/).filter(l => !/^id\s*:/.test(l)).join('\n')
+    return text.slice(0, m.index) + `---\n${idLine}\n${rest}${rest ? '\n' : ''}---\n` + text.slice(m.index + m[0].length)
+  }
   return `---\n${idLine}\n---\n\n${text}`
 }
 

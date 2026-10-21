@@ -32,6 +32,7 @@ Best way to tune a theme: open the **Welcome** page. It renders every element.
 | `danger` | Overdue, badges, delete |
 | `ok` | Synced / healthy status dot |
 | `code-bg` | Inline code and code block background |
+| `code-fg` | Inline code text color (defaults to `syn-keyword`; code blocks use the `syn-*` colors) |
 | `chip-bg-sat`, `chip-bg-l` | Category chip background saturation / lightness. Hue is derived from the name |
 | `chip-fg-sat`, `chip-fg-l` | Category chip text saturation / lightness |
 | `font-body`, `font-heading`, `font-mono` | Font stacks (system or already-loaded fonts) |
