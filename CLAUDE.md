@@ -96,6 +96,15 @@ Dependencies point inward: `app` → `features`/`editor` → `data` → `core`.
 - **Browser storage keys** use the `npkn.` prefix (`npkn.theme`, `npkn.ask`, `npkn.welcome`, `npkn.customThemes`, `npkn.character`, `npkn.look`, `npkn.characterColors`, `npkn.collapsed`, `npkn.ai`, `npkn.width`, `npkn.todoGroup`); IndexedDB database name is `notes`. A rename must migrate these.
 - Dexie `update(id, {x: undefined})` clears the field; that's how removing front matter works.
 
+## Tables
+
+Tiptap v2 table nodes (`editor/extensions.ts`, not resizable: markdown has no widths). Files use GFM tables
+(`table()` in `core/markdown.ts`): a cell is its paragraphs joined by `<br>`, pipes escaped, and the first
+row is always written as the header because GFM requires one. `editor/TableBar.tsx` is the page toolbar
+(insert, plus row/column/header/delete while the caret is in a table). Paste: HTML tables use the nodes'
+own parse rules; plain-text TSV or a markdown table goes through `pastedTableMarkdown` in `handlePaste`.
+Trap: Ask's reply renderer (`features/ask/Markdown.tsx`) was not given tables.
+
 ## Links between pages
 
 - **In the app** an internal link is an ordinary Link mark with `href="npkn:<page id>"` (`core/links.ts`); ids survive renames and moves. Typing `[[` opens the picker (`editor/pageLinks.ts`); `[[Title]]` of an existing page converts on the closing brackets. Click navigates (Alt-click bypasses); a missing target gets `.link-broken`. "Linked from" lists `backlinks()`.
@@ -231,4 +240,4 @@ Findings (Oct 2026, M5 Max, 2 runs each, 22 answers per model, after the fixes b
 - Git repo, branch `main`, remote `origin` = `git@github.com:lchase/npkn.git` (SSH; HTTPS has no stored credentials here). The desktop build output (`release/`), `dist/` and `node_modules` are gitignored.
 - Name undecided (candidates discussed: scratchthat, forgetmenote, wrotle, napcrumbs, notle, scrapjot). Don't rename without being asked.
 - Longer-term ideas and open questions live in `docs/ideas.md`; add to it rather than here.
-- Open ideas, roughly in priority order: Vitest for `core/`; embeddings for Ask; persisted chat history; chip editing; tables/images; sync backend behind `data/pages.ts`.
+- Open ideas, roughly in priority order: Vitest for `core/`; embeddings for Ask; persisted chat history; chip editing; images; sync backend behind `data/pages.ts`.

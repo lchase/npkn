@@ -53,6 +53,8 @@ function block(n: Doc, orderedIndex = 0): string {
     }
     case 'horizontalRule':
       return '---'
+    case 'table':
+      return table(n)
     case 'bulletList':
       return (n.content ?? []).map(li => '- ' + indent(item(li), '  ')).join('\n')
     case 'orderedList':
@@ -64,6 +66,23 @@ function block(n: Doc, orderedIndex = 0): string {
     default:
       return (n.content ?? []).map(c => block(c)).join('\n\n')
   }
+}
+
+/**
+ * GFM tables are one line per row, so a cell is its paragraphs joined with <br> (which import turns back
+ * into a hard break), with pipes escaped. GFM requires a header row: a table whose first row is plain
+ * cells is written with that row as the header.
+ */
+function table(t: Doc): string {
+  const rows = (t.content ?? []).map(r =>
+    (r.content ?? []).map(c =>
+      (c.content ?? []).map(p => inline(p).trim().replace(/\s*\n\s*/g, '<br>')).join('<br>').replace(/\|/g, '\\|'),
+    ),
+  )
+  if (!rows.length) return ''
+  const cols = Math.max(...rows.map(r => r.length))
+  const line = (r: string[]) => '| ' + Array.from({ length: cols }, (_, i) => r[i] ?? '').join(' | ') + ' |'
+  return [line(rows[0]), line(Array(cols).fill('---')), ...rows.slice(1).map(line)].join('\n')
 }
 
 function item(li: Doc): string {
@@ -148,6 +167,23 @@ function tasksToTiptap(html: string): string {
     li.parentElement?.setAttribute('data-type', 'taskList')
   })
   return dom.body.innerHTML
+}
+
+/**
+ * Plain-text clipboard content that is really a table, as GFM markdown, else null. Handles a pasted
+ * markdown table and tab-separated rows (what Excel/Sheets put on the clipboard as text). Only when the
+ * WHOLE paste is table lines, so prose that happens to contain a pipe or a tab is left alone.
+ */
+export function pastedTableMarkdown(text: string): string | null {
+  const lines = text.replace(/\r\n?/g, '\n').split('\n').filter(l => l.trim())
+  if (lines.length < 2) return null
+  const sep = /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)*\|?\s*$/
+  if (lines.every(l => l.includes('|')) && sep.test(lines[1])) return lines.join('\n')
+  const rows = lines.map(l => l.split('\t'))
+  const w = rows[0].length
+  if (w < 2 || rows.some(r => r.length !== w)) return null
+  const row = (r: string[]) => '| ' + r.map(c => c.trim().replace(/\|/g, '\\|')).join(' | ') + ' |'
+  return [row(rows[0]), row(Array(w).fill('---')), ...rows.slice(1).map(row)].join('\n')
 }
 
 export interface ImportedPage {

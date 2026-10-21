@@ -12,6 +12,7 @@
   --danger: #c4372c;
   --ok: #3f8a68;
   --code-bg: #f3f1ec;
+  --code-fg: var(--syn-keyword);
   --chip-bg-sat: 70%;
   --chip-bg-l: 90%;
   --chip-fg-sat: 55%;
@@ -40,7 +41,7 @@ body {
 }
 button { font: inherit; color: inherit; cursor: pointer; }
 input { font: inherit; color: inherit; }
-code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; font: 0.88em var(--font-mono); }
+code { background: var(--code-bg); color: var(--code-fg); padding: 1px 5px; border-radius: 4px; font: 0.88em var(--font-mono); }
 
 .app { display: flex; height: 100%; }
 
