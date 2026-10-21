@@ -11,14 +11,14 @@
     "desktop": "node desktop/setup.cjs && npm run build && electron desktop/main.cjs",
     "dev:desktop": "concurrently -k -n web,app -c blue,green \"npm:dev\" \"wait-on -d 500 http://localhost:5173 && npm run desktop:dev\"",
     "desktop:dev": "node desktop/setup.cjs && NPKN_DEV_URL=http://localhost:5173 electron desktop/main.cjs",
-    "desktop:pack": "node desktop/setup.cjs && npm run build && electron-builder --dir",
+    "desktop:pack": "node desktop/setup.cjs && npm run build && electron-builder",
     "test": "vitest run",
     "test:desktop": "node desktop/setup.cjs && npm run build && node desktop/test/sync.e2e.mjs",
     "test:browser": "node desktop/setup.cjs && node desktop/test/browser-sync.e2e.mjs",
     "icons": "node desktop/setup.cjs && electron scripts/make-icons.cjs"
   },
   "dependencies": {
-    "@tiptap/core": "^2.10.0",
+    "@tiptap/core": "^2.27.3",
     "@tiptap/extension-code-block-lowlight": "^2.27.3",
     "@tiptap/extension-link": "^2.27.3",
     "@tiptap/extension-placeholder": "^2.10.0",
@@ -29,7 +29,7 @@
     "@tiptap/extension-task-item": "^2.10.0",
     "@tiptap/extension-task-list": "^2.10.0",
     "@tiptap/react": "^2.10.0",
-    "@tiptap/starter-kit": "^2.10.0",
+    "@tiptap/starter-kit": "^2.27.3",
     "@tiptap/suggestion": "^2.27.3",
     "dexie": "^4.0.10",
     "dexie-react-hooks": "^1.1.7",
@@ -44,12 +44,12 @@
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
     "concurrently": "^10.0.6",
-    "electron": "^33.4.11",
-    "electron-builder": "^25.1.8",
-    "happy-dom": "^15.11.7",
+    "electron": "^44.9.0",
+    "electron-builder": "^26.15.3",
+    "happy-dom": "^21.0.3",
     "typescript": "^5.6.3",
-    "vite": "^5.4.11",
-    "vitest": "^2.1.9",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.5",
     "wait-on": "^9.5.1"
   },
   "description": "Stripped-down, local-first notes with rolled-up todos and an Ask-your-notes chat",
@@ -71,7 +71,7 @@
     "mac": {
       "category": "public.app-category.productivity",
       "target": [
-        "dir"
+        "dmg"
       ],
       "icon": "desktop/icon.icns"
     }
