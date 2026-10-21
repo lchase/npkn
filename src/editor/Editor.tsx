@@ -1,16 +1,18 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { EditorContent, useEditor } from '@tiptap/react'
 import Placeholder from '@tiptap/extension-placeholder'
 import { editorExtensions } from './extensions'
 import { PageLinks } from './pageLinks'
 import { TableBar } from './TableBar'
 import { markdownToPage, pastedTableMarkdown } from '../core/markdown'
+import { LinkEditor, linkTargetAt, type LinkTarget } from './LinkEditor'
 import type { Page } from '../core/types'
 import { updatePage } from '../data/pages'
 
 export function PageEditor({ page }: { page: Page }) {
   const timer = useRef<number>()
   const dirty = useRef(false)
+  const [linkTarget, setLinkTarget] = useState<LinkTarget | null>(null)
   const editorRef = useRef<ReturnType<typeof useEditor>>(null)
 
   const editor = useEditor({
@@ -24,6 +26,13 @@ export function PageEditor({ page }: { page: Page }) {
         if (!md || !editorRef.current) return false
         e.preventDefault()
         editorRef.current.commands.insertContent(markdownToPage(md, 'paste').content.content ?? [])
+        return true
+      },
+      // Cmd/Ctrl+K: edit the link under the caret, or turn the selection into one.
+      handleKeyDown: (_view, e) => {
+        if (!(e.metaKey || e.ctrlKey) || e.altKey || e.key.toLowerCase() !== 'k') return false
+        e.preventDefault()
+        if (editorRef.current) setLinkTarget(linkTargetAt(editorRef.current))
         return true
       },
     },
@@ -63,6 +72,7 @@ export function PageEditor({ page }: { page: Page }) {
     <>
       {editor && <TableBar editor={editor} />}
       <EditorContent editor={editor} className="editor" />
+      {editor && linkTarget && <LinkEditor editor={editor} target={linkTarget} onClose={() => setLinkTarget(null)} />}
     </>
   )
 }
