@@ -1,0 +1,25 @@
+{
+  "id": "heather",
+  "name": "Heather",
+  "scheme": "dark",
+  "author": "npkn",
+  "vars": {
+    "bg": "#26242f",
+    "side": "#2e2c39",
+    "text": "#dedbe8",
+    "muted": "#a39fb2",
+    "line": "#403d4d",
+    "accent": "#c4b5ff",
+    "code-bg": "#2e2c39",
+    "radius": "4px",
+    "syn-comment": "#8a8699",
+    "syn-keyword": "#c4b5ff",
+    "syn-string": "#7fdcd0",
+    "syn-number": "#ffb380",
+    "syn-function": "#8ec5ff",
+    "syn-type": "#7fdcd0",
+    "syn-variable": "#dedbe8",
+    "syn-meta": "#ffb380",
+    "syn-punct": "#a39fb2"
+  }
+}

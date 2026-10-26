@@ -1,0 +1,25 @@
+{
+  "id": "cobalt-night",
+  "name": "Cobalt Night",
+  "scheme": "dark",
+  "author": "npkn",
+  "vars": {
+    "bg": "#141619",
+    "side": "#1a1d21",
+    "text": "#e3e6ea",
+    "muted": "#9aa3ad",
+    "line": "#2d3238",
+    "accent": "#a794ff",
+    "code-bg": "#1a1d21",
+    "radius": "4px",
+    "syn-comment": "#7c8792",
+    "syn-keyword": "#c4b5ff",
+    "syn-string": "#7fdcd0",
+    "syn-number": "#ffb380",
+    "syn-function": "#8ec5ff",
+    "syn-type": "#7fdcd0",
+    "syn-variable": "#e3e6ea",
+    "syn-meta": "#ffb380",
+    "syn-punct": "#9aa3ad"
+  }
+}

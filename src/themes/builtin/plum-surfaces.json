@@ -1,0 +1,25 @@
+{
+  "id": "plum-surfaces",
+  "name": "Plum surfaces",
+  "scheme": "dark",
+  "author": "npkn",
+  "vars": {
+    "bg": "#20232a",
+    "side": "#262a32",
+    "text": "#dde0e6",
+    "muted": "#9da5b2",
+    "line": "#363b45",
+    "accent": "#b7a6ff",
+    "code-bg": "#262a32",
+    "radius": "4px",
+    "syn-comment": "#8e89a6",
+    "syn-keyword": "#c4b5ff",
+    "syn-string": "#7fdcd0",
+    "syn-number": "#ffb380",
+    "syn-function": "#8ec5ff",
+    "syn-type": "#7fdcd0",
+    "syn-variable": "#dde0e6",
+    "syn-meta": "#ffb380",
+    "syn-punct": "#9da5b2"
+  }
+}

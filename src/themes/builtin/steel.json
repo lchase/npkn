@@ -1,0 +1,25 @@
+{
+  "id": "steel",
+  "name": "Steel",
+  "scheme": "dark",
+  "author": "npkn",
+  "vars": {
+    "bg": "#252a33",
+    "side": "#2c323d",
+    "text": "#d9dde5",
+    "muted": "#9ca5b4",
+    "line": "#3c4452",
+    "accent": "#b7a6ff",
+    "code-bg": "#2c323d",
+    "radius": "4px",
+    "syn-comment": "#828c9a",
+    "syn-keyword": "#c4b5ff",
+    "syn-string": "#7fdcd0",
+    "syn-number": "#ffb380",
+    "syn-function": "#8ec5ff",
+    "syn-type": "#7fdcd0",
+    "syn-variable": "#d9dde5",
+    "syn-meta": "#ffb380",
+    "syn-punct": "#9ca5b4"
+  }
+}

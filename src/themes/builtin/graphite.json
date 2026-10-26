@@ -1,0 +1,25 @@
+{
+  "id": "graphite",
+  "name": "Graphite",
+  "scheme": "dark",
+  "author": "npkn",
+  "vars": {
+    "bg": "#1e2126",
+    "side": "#24272d",
+    "text": "#dde1e6",
+    "muted": "#9aa3ad",
+    "line": "#343940",
+    "accent": "#a794ff",
+    "code-bg": "#24272d",
+    "radius": "4px",
+    "syn-comment": "#7f8891",
+    "syn-keyword": "#c4b5ff",
+    "syn-string": "#7fdcd0",
+    "syn-number": "#ffb380",
+    "syn-function": "#8ec5ff",
+    "syn-type": "#7fdcd0",
+    "syn-variable": "#dde1e6",
+    "syn-meta": "#ffb380",
+    "syn-punct": "#9aa3ad"
+  }
+}

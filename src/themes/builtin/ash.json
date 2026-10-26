@@ -1,0 +1,25 @@
+{
+  "id": "ash",
+  "name": "Ash",
+  "scheme": "dark",
+  "author": "npkn",
+  "vars": {
+    "bg": "#2a2a2f",
+    "side": "#323237",
+    "text": "#dcdbe0",
+    "muted": "#a3a2ab",
+    "line": "#434349",
+    "accent": "#c9b8ff",
+    "code-bg": "#323237",
+    "radius": "4px",
+    "syn-comment": "#88878f",
+    "syn-keyword": "#c4b5ff",
+    "syn-string": "#7fdcd0",
+    "syn-number": "#ffb380",
+    "syn-function": "#8ec5ff",
+    "syn-type": "#7fdcd0",
+    "syn-variable": "#dcdbe0",
+    "syn-meta": "#ffb380",
+    "syn-punct": "#a3a2ab"
+  }
+}

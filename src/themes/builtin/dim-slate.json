@@ -1,0 +1,25 @@
+{
+  "id": "dim-slate",
+  "name": "Dim slate",
+  "scheme": "dark",
+  "author": "npkn",
+  "vars": {
+    "bg": "#23272d",
+    "side": "#2a2f36",
+    "text": "#d3d8de",
+    "muted": "#9ea7b1",
+    "line": "#3c434c",
+    "accent": "#8db3ff",
+    "code-bg": "#2a2f36",
+    "radius": "4px",
+    "syn-comment": "#868f99",
+    "syn-keyword": "#c4b5ff",
+    "syn-string": "#7fdcd0",
+    "syn-number": "#ffb380",
+    "syn-function": "#8ec5ff",
+    "syn-type": "#7fdcd0",
+    "syn-variable": "#d3d8de",
+    "syn-meta": "#ffb380",
+    "syn-punct": "#9ea7b1"
+  }
+}

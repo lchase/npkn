@@ -10,7 +10,7 @@ A stripped-down, local-first notes app. Think Notion with only the parts that ma
 - **Links between pages.** Type `[[` to link a page (or create one). Click to follow; each page lists what links to it. Links are stored by page id in the app and written as ordinary relative `.md` links in files, so renames don't break them and other tools can follow them.
 - **Open Knowledge Format.** Each page can carry YAML front matter (`type`, `title`, `description`, `tags`, anything else), shown as a muted one-line summary under the title. Export a page or the whole notebook as plain `.md` files.
 - **Display preferences.** Settings → Display sets the page width (Standard, Wide, Full) for notes and the Todos list.
-- **Themes are JSON.** Paper, Ink, Nord, Gruvbox Light/Dark ship in the box. See [docs/themes.md](docs/themes.md).
+- **Themes are JSON.** Paper, Ink, Nord, Gruvbox Light/Dark and ten more dark themes (Ash, Carbon, Cobalt Night, Dim slate, Graphite, Heather, Midnight, Plum surfaces, Steel, Violet ink) ship in the box. See [docs/themes.md](docs/themes.md).
 
 Everything is stored in your browser (IndexedDB). There is no server.
 

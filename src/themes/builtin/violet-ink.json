@@ -1,0 +1,25 @@
+{
+  "id": "violet-ink",
+  "name": "Violet ink",
+  "scheme": "dark",
+  "author": "npkn",
+  "vars": {
+    "bg": "#17121f",
+    "side": "#1e1828",
+    "text": "#e6e0ee",
+    "muted": "#a399b3",
+    "line": "#362d45",
+    "accent": "#c4b5ff",
+    "code-bg": "#1e1828",
+    "radius": "4px",
+    "syn-comment": "#857a96",
+    "syn-keyword": "#c4b5ff",
+    "syn-string": "#7fdcd0",
+    "syn-number": "#ffb380",
+    "syn-function": "#8ec5ff",
+    "syn-type": "#7fdcd0",
+    "syn-variable": "#e6e0ee",
+    "syn-meta": "#ffb380",
+    "syn-punct": "#a399b3"
+  }
+}
