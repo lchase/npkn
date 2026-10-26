@@ -34,6 +34,12 @@ describe('upsertYamlKey / stripYamlKey', () => {
   it('strips a key', () => {
     expect(stripYamlKey('id: "x"\ntype: note\n', 'id')).toBe('type: note\n')
   })
+  it('round-trips pinned without touching comments or other keys', () => {
+    const y = '# my comment\ntype: note\ntags: [a, b]  # why\nprivate: true\n'
+    const pinned = upsertYamlKey(y, 'pinned', 'true')
+    expect(pinned).toBe('pinned: true\n' + y)
+    expect(stripYamlKey(pinned, 'pinned')).toBe(y)
+  })
 })
 
 describe('buildNoteFile / parseNoteFile', () => {

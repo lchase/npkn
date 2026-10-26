@@ -25,6 +25,7 @@ export const KNOWN_KEYS: KeyInfo[] = [
   { key: 'resource', help: 'A link to what this page is about (a repo, a ticket, a document).', insert: '', offer: false },
   { key: 'sources', help: 'Where this information came from.', insert: '[]', offer: false },
   { key: 'supersedes', help: 'The page this one replaces.', insert: '', offer: false },
+  { key: 'pinned', help: 'Shows this page in Pinned at the top of the sidebar.', insert: 'true', offer: false },
   { key: 'labels', help: 'Colors and statuses for @labels. Easiest to change in Settings.', insert: '', offer: false },
   // Managed by the app; known so they never trigger a typo hint.
   { key: 'title', help: 'Kept in step with the page title.', insert: '', offer: false },

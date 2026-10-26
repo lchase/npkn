@@ -16,6 +16,7 @@ describe('keyHints', () => {
     ['tag', 'tags'],
     ['tpye', 'type'],
     ['statuss', 'status'],
+    ['pined', 'pinned'],
   ])('%s -> %s', (typo, expected) => expect(hint(typo)).toBe(expected))
 
   it.each(['owner', 'custom_key', 'hiring_stage', 'zz', 'x', 'department', 'due', 'priority', 'url'])('leaves %j alone', k => {
@@ -23,7 +24,7 @@ describe('keyHints', () => {
   })
 
   it('never flags real keys', () => {
-    expect(keyHints(['type', 'title', 'description', 'tags', 'private', 'id', 'status', 'owner', 'date'])).toEqual([])
+    expect(keyHints(['type', 'title', 'description', 'tags', 'private', 'id', 'status', 'owner', 'date', 'pinned'])).toEqual([])
   })
 
   it("doesn't turn a legitimate custom key into a false alarm", () => {

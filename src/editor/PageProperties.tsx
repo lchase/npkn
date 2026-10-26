@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { Page } from '../core/types'
 import { updatePage } from '../data/pages'
 import { NEW_FRONT, frontTags, frontText, frontType, isFlaggedPrivate, parseFront } from '../core/frontmatter'
@@ -13,6 +13,12 @@ export function PageProperties({ page, inheritedPrivate = false }: { page: Page;
   const [text, setText] = useState(page.frontmatter ?? '')
   const [open, setOpen] = useState(false)
   const [help, setHelp] = useState('')
+
+  // Others write front matter too (the toolbar pin), and `text` would put the old value back on the next
+  // edit. Follow the page only while the YAML editor is closed, so an edit in progress isn't replaced.
+  useEffect(() => {
+    if (!open) setText(page.frontmatter ?? '')
+  }, [page.frontmatter, open])
 
   const save = (next: string) => {
     setText(next)
