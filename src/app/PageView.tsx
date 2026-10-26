@@ -46,7 +46,9 @@ export function PageView({
   const pinned = isPinned(page.frontmatter)
   const togglePin = () => {
     const text = page.frontmatter ?? ''
-    const next = pinned ? stripYamlKey(text, 'pinned') : upsertYamlKey(text.trim() ? text : 'type: note\n', 'pinned', 'true')
+    const next = pinned
+      ? stripYamlKey(text, 'pinned')
+      : upsertYamlKey(text.trim() ? text : 'type: note\n', 'pinned', 'true')
     updatePage(page.id, { frontmatter: next.trim() ? next : undefined })
   }
 
@@ -67,7 +69,12 @@ export function PageView({
           onBlur={commitTitle}
         />
         <div className="page-actions">
-          <button className="dock-btn" onClick={togglePin} aria-pressed={pinned} title={pinned ? 'Unpin' : 'Pin to sidebar'}>
+          <button
+            className="dock-btn"
+            onClick={togglePin}
+            aria-pressed={pinned}
+            title={pinned ? 'Unpin' : 'Pin to sidebar'}
+          >
             <PinIcon /> {pinned ? 'Pinned' : 'Pin'}
           </button>
           <button className="dock-btn" onClick={exportPage} title="Download as .md with front matter">
