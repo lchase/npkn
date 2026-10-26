@@ -3,11 +3,12 @@ import type { Page } from '../core/types'
 import { download, fileSlug } from '../core/bundle'
 import { backlinks, fileLinkMapper } from '../core/links'
 import { pageToMarkdown } from '../core/markdown'
-import { planPaths } from '../core/notefile'
+import { isPinned } from '../core/frontmatter'
+import { planPaths, stripYamlKey, upsertYamlKey } from '../core/notefile'
 import { updatePage } from '../data/pages'
 import { PageEditor } from '../editor/Editor'
 import { PageProperties } from '../editor/PageProperties'
-import { ExportIcon, TrashIcon } from '../ui/icons'
+import { ExportIcon, PinIcon, TrashIcon } from '../ui/icons'
 
 export function PageView({
   page,
@@ -42,6 +43,13 @@ export function PageView({
     download(`${fileSlug(page.title)}.md`, new Blob([text], { type: 'text/markdown' }))
   }
 
+  const pinned = isPinned(page.frontmatter)
+  const togglePin = () => {
+    const text = page.frontmatter ?? ''
+    const next = pinned ? stripYamlKey(text, 'pinned') : upsertYamlKey(text.trim() ? text : 'type: note\n', 'pinned', 'true')
+    updatePage(page.id, { frontmatter: next.trim() ? next : undefined })
+  }
+
   const linkedFrom = backlinks(pages, page.id).sort((a, b) => a.title.localeCompare(b.title))
 
   return (
@@ -59,6 +67,9 @@ export function PageView({
           onBlur={commitTitle}
         />
         <div className="page-actions">
+          <button className="dock-btn" onClick={togglePin} aria-pressed={pinned} title={pinned ? 'Unpin' : 'Pin to sidebar'}>
+            <PinIcon /> {pinned ? 'Pinned' : 'Pin'}
+          </button>
           <button className="dock-btn" onClick={exportPage} title="Download as .md with front matter">
             <ExportIcon /> Export .md
           </button>

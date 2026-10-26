@@ -30,6 +30,7 @@
 }
 .dock-btn:hover { background: color-mix(in srgb, var(--text) 9%, transparent); }
 .dock-btn.danger:hover { color: var(--danger); }
+.dock-btn[aria-pressed='true'] { color: var(--accent); }
 .page-actions .dock-btn, .editor-bar .dock-btn { padding: 4px 8px; }
 .icon-btn {
   display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;

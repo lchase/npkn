@@ -55,6 +55,14 @@ export function isFlaggedPrivate(frontmatter: string | undefined): boolean {
   return v === true || (typeof v === 'string' && v.trim().toLowerCase() === 'true')
 }
 
+/** Shown in the sidebar's Pinned list. Same rules as `private`, but not inherited by children. */
+export function isPinned(frontmatter: string | undefined): boolean {
+  const p = parseFront(frontmatter)
+  if (!p || !p.ok) return false
+  const v = p.data.pinned
+  return v === true || (typeof v === 'string' && v.trim().toLowerCase() === 'true')
+}
+
 /**
  * Ids of pages that must not be shared with a cloud model: flagged pages and everything beneath them.
  * Inheritance is deliberate: marking "Interviews" private should protect every candidate page under it.

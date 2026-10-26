@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { isPinned } from '../core/frontmatter'
 import type { Page } from '../core/types'
 import { Avatar, type Mood } from '../features/ask/characters'
 import { useAsk } from '../features/ask/store'
@@ -71,6 +72,8 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
     for (const list of m.values()) list.sort(byTitle)
     return m
   }, [pages])
+
+  const pinned = useMemo(() => pages.filter(p => isPinned(p.frontmatter)).sort(byTitle), [pages])
 
   const parentOf = useMemo(() => new Map(pages.map(p => [p.id, p.parentId])), [pages])
   const parents = useMemo(() => pages.filter(p => byParent.has(p.id)).map(p => p.id), [pages, byParent])
@@ -182,6 +185,26 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
         <span className="nav-glyph"><SettingsIcon /></span>
         <span className="nav-title">Settings</span>
       </div>
+
+      {!results && pinned.length > 0 && (
+        <>
+          <div className="section-head">
+            <span>Pinned</span>
+          </div>
+          {pinned.map(p => (
+            <div
+              key={p.id}
+              className={'nav-item' + (view.kind === 'page' && view.id === p.id ? ' active' : '')}
+              style={{ paddingLeft: 4 }}
+              onClick={() => go({ kind: 'page', id: p.id })}
+            >
+              <span className="nav-glyph"><PageIcon /></span>
+              <span className="nav-title">{p.title || 'Untitled'}</span>
+              {privateIds.has(p.id) && <span className="nav-lock" title="Private: not sent to cloud models"><LockIcon size={11} /></span>}
+            </div>
+          ))}
+        </>
+      )}
 
       <div className="section-head">
         <span>Pages</span>

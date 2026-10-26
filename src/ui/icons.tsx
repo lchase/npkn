@@ -39,7 +39,10 @@ export const ImportIcon = ({ size }: { size?: number }) => (
 export const ExportIcon = ({ size }: { size?: number }) => (
   <Stroke size={size}><path d="M8 9.5v-7M5.2 5.3 8 2.5l2.8 2.8M3 12.5h10" /></Stroke>
 )
-export const SampleIcon = ({ size }: { size?: number }) => (
+export const PinIcon = ({ size }: { size?: number }) => (
+  <Stroke size={size}><path d="M6 2.5h4M6.6 2.5 6 7l-2 2.2h8L10 7l-.6-4.5M8 9.2v4.3" /></Stroke>
+)
+export const SampleIcon =({ size }: { size?: number }) => (
   <Stroke size={size}><path d="M2.5 3.5c2.2-.5 4 0 5.5 1.2v8c-1.5-1.2-3.3-1.7-5.5-1.2zM13.5 3.5c-2.2-.5-4 0-5.5 1.2v8c1.5-1.2 3.3-1.7 5.5-1.2z" /></Stroke>
 )
 export const FolderIcon = ({ size }: { size?: number }) => (
