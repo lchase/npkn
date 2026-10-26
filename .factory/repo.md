@@ -11,7 +11,8 @@ main
 
 ## Setup
 
-- `npm ci --legacy-peer-deps=false` (the user's global npmrc sets legacy-peer-deps, which breaks lockfiles)
+- `npm ci` (relies on the user's global `legacy-peer-deps=true`: `@vitejs/plugin-react@4.7` peers vite <=7 but the
+  repo is on vite 8, so a strict `--legacy-peer-deps=false` install fails with ERESOLVE)
 
 ## Commands
 
