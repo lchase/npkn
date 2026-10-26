@@ -29,6 +29,8 @@
   border: 1px solid var(--line); border-radius: var(--radius);
 }
 .dock-btn:hover { background: color-mix(in srgb, var(--text) 9%, transparent); }
+.dock-btn.danger:hover { color: var(--danger); }
+.page-actions .dock-btn, .editor-bar .dock-btn { padding: 4px 8px; }
 .icon-btn {
   display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
   width: 28px; height: 28px; padding: 0; color: var(--muted);

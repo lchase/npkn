@@ -137,7 +137,7 @@ ul[data-type='taskList'] ul[data-type='taskList'] { margin-left: 0.3em; }
 .link-editor-actions button:disabled { opacity: 0.5; cursor: default; }
 
 /* ---- page toolbar ---- */
-.editor-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; margin: 0 0 8px; }
+.editor-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 0 0 8px; }
 .editor-bar-sep { width: 1px; height: 14px; background: var(--line); margin: 0 6px; }
 
 /* ---- tables ---- */

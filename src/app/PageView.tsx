@@ -7,6 +7,7 @@ import { planPaths } from '../core/notefile'
 import { updatePage } from '../data/pages'
 import { PageEditor } from '../editor/Editor'
 import { PageProperties } from '../editor/PageProperties'
+import { ExportIcon, TrashIcon } from '../ui/icons'
 
 export function PageView({
   page,
@@ -58,11 +59,11 @@ export function PageView({
           onBlur={commitTitle}
         />
         <div className="page-actions">
-          <button className="mini" onClick={exportPage} title="Download as .md with front matter">
-            Export .md
+          <button className="dock-btn" onClick={exportPage} title="Download as .md with front matter">
+            <ExportIcon /> Export .md
           </button>
-          <button className="mini danger" onClick={() => onDelete(page.id)}>
-            Delete
+          <button className="dock-btn danger" onClick={() => onDelete(page.id)}>
+            <TrashIcon /> Delete
           </button>
         </div>
       </div>

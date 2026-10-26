@@ -60,6 +60,12 @@ export const AutoIcon = ({ size }: { size?: number }) => (
 export const PaletteIcon = ({ size }: { size?: number }) => (
   <Stroke size={size}><path d="M8 2.5c-3.1 0-5.5 2.3-5.5 5.3S4.8 13.5 8 13.5c1.1 0 1.5-.7 1.2-1.5-.3-.9.2-1.7 1.2-1.7h1.3c1.1 0 1.8-.8 1.8-2C13.5 4.6 11 2.5 8 2.5z" /><circle cx="5.5" cy="7.5" r=".6" fill="currentColor" /><circle cx="8" cy="5.3" r=".6" fill="currentColor" /><circle cx="10.6" cy="7" r=".6" fill="currentColor" /></Stroke>
 )
+export const TableIcon = ({ size }: { size?: number }) => (
+  <Stroke size={size}><rect x="2.5" y="3" width="11" height="10" rx="1.5" /><path d="M2.5 6.5h11M2.5 9.8h11M6.5 6.5V13" /></Stroke>
+)
+export const TrashIcon = ({ size }: { size?: number }) => (
+  <Stroke size={size}><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.3 4.5l.6 8.5h6.2l.6-8.5" /></Stroke>
+)
 export const SearchIcon = ({ size }: { size?: number }) => (
   <Stroke size={size}><circle cx="7" cy="7" r="4.5" /><path d="m10.5 10.5 3 3" /></Stroke>
 )

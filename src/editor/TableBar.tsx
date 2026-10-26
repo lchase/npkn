@@ -1,5 +1,6 @@
 import { useEffect, useReducer } from 'react'
 import type { Editor } from '@tiptap/react'
+import { TableIcon } from '../ui/icons'
 
 /**
  * Page toolbar. Only tables so far: "Table" inserts one, and the rest appear while the caret is inside
@@ -14,15 +15,16 @@ export function TableBar({ editor }: { editor: Editor }) {
   }, [editor])
 
   const chain = () => editor.chain().focus()
-  const Btn = ({ label, run, danger, title }: { label: string; run: () => void; danger?: boolean; title?: string }) => (
-    <button className={'mini' + (danger ? ' danger' : '')} title={title} onMouseDown={e => e.preventDefault()} onClick={run}>
+  const Btn = ({ label, run, danger, title, icon }: { label: string; run: () => void; danger?: boolean; title?: string; icon?: React.ReactNode }) => (
+    <button className={'dock-btn' + (danger ? ' danger' : '')} title={title} onMouseDown={e => e.preventDefault()} onClick={run}>
+      {icon}
       {label}
     </button>
   )
 
   return (
     <div className="editor-bar" role="toolbar" aria-label="Page tools">
-      <Btn label="Table" title="Insert a 3×3 table" run={() => chain().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()} />
+      <Btn label="Table" icon={<TableIcon />} title="Insert a 3×3 table" run={() => chain().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()} />
       {editor.isActive('table') && (
         <>
           <span className="editor-bar-sep" />
