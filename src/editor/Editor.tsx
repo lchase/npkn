@@ -5,6 +5,7 @@ import { editorExtensions } from './extensions'
 import { PageLinks } from './pageLinks'
 import { TableBar } from './TableBar'
 import { markdownToPage, pastedTableMarkdown } from '../core/markdown'
+import { pastedLinkLines } from '../core/pasteLinks'
 import { LinkEditor, linkTargetAt, type LinkTarget } from './LinkEditor'
 import type { Page } from '../core/types'
 import { updatePage } from '../data/pages'
@@ -22,6 +23,16 @@ export function PageEditor({ page }: { page: Page }) {
       handlePaste: (_view, e) => {
         const cd = e.clipboardData
         if (!cd || /<table/i.test(cd.getData('text/html'))) return false
+        // Jira and GitHub PR URLs become links labelled "ABC-123" / "PR #12". Plain text only: a rich
+        // paste (already-formatted links) keeps its own text.
+        const lines = pastedLinkLines(cd.getData('text/plain'))
+        if (lines && editorRef.current) {
+          e.preventDefault()
+          editorRef.current.commands.insertContent(
+            lines.length === 1 ? lines[0] : lines.map(content => ({ type: 'paragraph', content })),
+          )
+          return true
+        }
         const md = pastedTableMarkdown(cd.getData('text/plain'))
         if (!md || !editorRef.current) return false
         e.preventDefault()
