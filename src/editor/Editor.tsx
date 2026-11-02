@@ -23,7 +23,8 @@ export function PageEditor({ page }: { page: Page }) {
       handlePaste: (_view, e) => {
         const cd = e.clipboardData
         if (!cd || /<table/i.test(cd.getData('text/html'))) return false
-        // Jira and GitHub PR URLs become links labelled "ABC-123" / "PR #12". Plain text only: a rich
+        // Jira, GitHub, Linear, Confluence and X URLs become links with a short label ("ABC-123",
+        // "PR #12"; core/pasteLinks.ts has the rules). Plain text only: a rich
         // paste (already-formatted links) keeps its own text.
         const lines = pastedLinkLines(cd.getData('text/plain'))
         if (lines && editorRef.current) {

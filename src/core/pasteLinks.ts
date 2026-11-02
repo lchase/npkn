@@ -1,19 +1,41 @@
 export type Inline = { type: 'text'; text: string; marks?: { type: 'link'; attrs: { href: string } }[] }
 
 const URL_RE = /https?:\/\/[^\s<>]+/g
-const JIRA_RE = /^https?:\/\/[\w.-]+\.atlassian\.net\/browse\/([A-Z][A-Z0-9]+-\d+)(?:[/?#]|$)/
-const PR_RE = /^https?:\/\/github\.com\/[\w.-]+\/[\w.-]+\/pull\/(\d+)(?:[/?#]|$)/
+const END = '(?:[/?#]|$)'
+const HOST = '[\\w.-]+'
 
-/** Short display text for a Jira issue or GitHub PR URL, else null. */
+// First match wins. A label comes from the URL alone: nothing here may fetch.
+const RULES: [RegExp, (m: RegExpExecArray) => string][] = [
+  [new RegExp(`^https?://${HOST}\\.atlassian\\.net/browse/([A-Z][A-Z0-9]+-\\d+)${END}`), m => m[1]],
+  [new RegExp(`^https?://${HOST}\\.atlassian\\.net/wiki/spaces/[^/]+/pages/\\d+/([^/?#]+)`), m => slugTitle(m[1])],
+  [new RegExp(`^https?://linear\\.app/[^/]+/issue/([A-Z][A-Z0-9]+-\\d+)${END}`), m => m[1]],
+  [new RegExp(`^https?://github\\.com/${HOST}/${HOST}/pull/(\\d+)${END}`), m => `PR #${m[1]}`],
+  [new RegExp(`^https?://github\\.com/${HOST}/${HOST}/issues/(\\d+)${END}`), m => `Issue #${m[1]}`],
+  [new RegExp(`^https?://github\\.com/${HOST}/${HOST}/commit/([0-9a-f]{7,40})${END}`), m => m[1].slice(0, 7)],
+  [new RegExp(`^https?://github\\.com/(${HOST}/${HOST})/?(?:[?#]|$)`), m => m[1]],
+  [new RegExp(`^https?://(?:www\\.)?(?:x|twitter)\\.com/(\\w+)/status/\\d+${END}`), m => `@${m[1]} post`],
+]
+
+/** Confluence page slug ("My_Page+Title") back to readable words. */
+function slugTitle(slug: string): string {
+  try {
+    return decodeURIComponent(slug.replace(/\+/g, ' ')).replace(/_/g, ' ')
+  } catch {
+    return slug
+  }
+}
+
+/** Short display text for a recognised URL, else null. */
 export function linkLabel(url: string): string | null {
-  const jira = JIRA_RE.exec(url)
-  if (jira) return jira[1]
-  const pr = PR_RE.exec(url)
-  return pr ? `PR #${pr[1]}` : null
+  for (const [re, label] of RULES) {
+    const m = re.exec(url)
+    if (m) return label(m)
+  }
+  return null
 }
 
 /**
- * Pasted plain text as lines of inline nodes, with each Jira/PR URL turned into a link labelled by
+ * Pasted plain text as lines of inline nodes, with each recognised URL turned into a link labelled by
  * `linkLabel`. Null when the paste has none, so ordinary pastes keep the editor's default handling.
  */
 export function pastedLinkLines(text: string): Inline[][] | null {
