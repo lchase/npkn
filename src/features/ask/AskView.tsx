@@ -17,6 +17,21 @@ function citedSources(text: string, sources: Source[]): Source[] {
   return picked.length ? picked : sources
 }
 
+/** Spinner + real phase + live seconds while a reply is in flight. */
+function Working({ since, label }: { since: number; label: string }) {
+  const [, tick] = useState(0)
+  useEffect(() => {
+    const id = window.setInterval(() => tick(n => n + 1), 500)
+    return () => window.clearInterval(id)
+  }, [])
+  return (
+    <div className="msg-working">
+      <span className="spinner" aria-hidden="true" />
+      {label} · {Math.floor((performance.now() - since) / 1000)} s
+    </div>
+  )
+}
+
 const STATUS: Record<Mood, string> = {
   idle: 'Ready',
   thinking: 'Thinking…',
@@ -127,7 +142,7 @@ export function AskView({ pages, onOpen, onOpenSettings }: { pages: Page[]; onOp
             <div key={i} className={`msg ${m.role}${m.error ? ' error' : ''}`}>
               <div className="msg-body">
                 {m.role === 'assistant' && !m.error ? (
-                  m.content ? <Markdown text={m.content} /> : busy && i === messages.length - 1 ? '…' : ''
+                  m.content ? <Markdown text={m.content} /> : ''
                 ) : (
                   m.content
                 )}
@@ -141,6 +156,13 @@ export function AskView({ pages, onOpen, onOpenSettings }: { pages: Page[]; onOp
                   ))}
                 </div>
               )}
+              {busy && i === messages.length - 1 && m.startedAt != null && (
+                <Working
+                  since={m.startedAt}
+                  label={m.content ? 'Answering' : m.sources?.length ? `Reading ${m.sources.length} note${m.sources.length === 1 ? '' : 's'}` : 'Thinking'}
+                />
+              )}
+              {m.ms != null &&<div className="msg-meta">{(m.ms / 1000).toFixed(1)} s</div>}
             </div>
           ))}
           <div ref={bottom} />
