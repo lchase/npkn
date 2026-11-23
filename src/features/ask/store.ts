@@ -10,6 +10,10 @@ export interface Msg {
   content: string
   sources?: Source[]
   error?: boolean
+  /** Wall-clock ms from sending the question to the reply finishing. */
+  ms?: number
+  /** performance.now() when the question was sent; drives the live timer while busy. */
+  startedAt?: number
 }
 
 interface State {
@@ -75,8 +79,9 @@ export async function send(q: string, opts: { pages: Page[] }) {
     .map(m => ({ role: m.role, content: m.content }))
   const payload: ChatMessage[] = [{ role: 'system', content: system }, ...history, { role: 'user', content: q }]
 
+  const t0 = performance.now()
   set({
-    messages: [...state.messages, { role: 'user', content: q }, { role: 'assistant', content: '', sources }],
+    messages: [...state.messages, { role: 'user', content: q }, { role: 'assistant', content: '', sources, startedAt: t0 }],
     busy: true,
     mood: 'thinking',
   })
@@ -95,6 +100,7 @@ export async function send(q: string, opts: { pages: Page[] }) {
       patchLast(m => ({ ...m, error: true, content: m.content || (e as Error).message }))
     }
   } finally {
+    if (!failed && !ac.signal.aborted) patchLast(m => ({ ...m, ms: performance.now() - t0 }))
     const gotText = !!state.messages[state.messages.length - 1]?.content
     set({ busy: false, mood: failed ? 'error' : gotText && !ac.signal.aborted ? 'happy' : 'idle' })
     if (!failed) calmTimer = window.setTimeout(() => set({ mood: 'idle' }), 1800)

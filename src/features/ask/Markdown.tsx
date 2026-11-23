@@ -5,14 +5,35 @@ import type { ReactNode } from 'react'
 
 function inline(s: string): ReactNode[] {
   const out: ReactNode[] = []
-  const re = /(\*\*[^*]+\*\*|`[^`]+`|\*[^*\s][^*]*\*)/g
+  // Links: [text](http…) and bare http(s) URLs. Only http(s) ever becomes an href (no javascript: etc.).
+  const re = /(\[[^\]]+\]\(https?:\/\/[^\s)]+\)|https?:\/\/[^\s<>`]+|\*\*[^*]+\*\*|`[^`]+`|\*[^*\s][^*]*\*)/g
   let last = 0
   let m: RegExpExecArray | null
   let k = 0
   while ((m = re.exec(s))) {
     if (m.index > last) out.push(s.slice(last, m.index))
-    const t = m[0]
-    if (t.startsWith('**')) out.push(<strong key={k++}>{t.slice(2, -2)}</strong>)
+    let t = m[0]
+    if (t.startsWith('[') || t.startsWith('http')) {
+      let text = t
+      let href = t
+      if (t.startsWith('[')) {
+        const i = t.indexOf('](') // link text can't contain ']', so the first '](' is the real split
+        text = t.slice(1, i)
+        href = t.slice(i + 2, -1)
+      } else {
+        // ponytail: trailing sentence punctuation isn't part of the URL; drop it back into the text
+        const trail = /[.,;:!?)\]]+$/.exec(t)?.[0] ?? ''
+        t = t.slice(0, t.length - trail.length)
+        text = href = t
+        re.lastIndex = m.index + t.length
+      }
+      let safe = false
+      try {
+        const p = new URL(href).protocol
+        safe = p === 'http:' || p === 'https:'
+      } catch { /* not a URL: render as text */ }
+      out.push(safe ? <a key={k++} href={href} target="_blank" rel="noopener noreferrer">{text}</a> : <span key={k++}>{t}</span>)
+    } else if (t.startsWith('**')) out.push(<strong key={k++}>{t.slice(2, -2)}</strong>)
     else if (t.startsWith('`')) out.push(<code key={k++}>{t.slice(1, -1)}</code>)
     else out.push(<em key={k++}>{t.slice(1, -1)}</em>)
     last = m.index + t.length

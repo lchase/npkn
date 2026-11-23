@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AutoIcon, MoonIcon, PaletteIcon, SunIcon } from '../ui/icons'
 import { allThemes, importTheme, selectTheme, selectedThemeId } from './index'
 
@@ -11,6 +11,12 @@ export function ThemePicker() {
   const [error, setError] = useState('')
   const [open, setOpen] = useState(false)
   const file = useRef<HTMLInputElement>(null)
+  const menu = useRef<HTMLDivElement>(null)
+
+  // The picker sits in the sidebar footer, so the list opens below the fold on short windows.
+  useEffect(() => {
+    if (open) menu.current?.scrollIntoView({ block: 'end', behavior: 'smooth' })
+  }, [open])
 
   const choose = (id: string) => {
     setSel(id)
@@ -59,7 +65,7 @@ export function ThemePicker() {
         </button>
       </div>
       {open && (
-        <div className="theme-more">
+        <div className="theme-more" ref={menu}>
           {more.map(t => (
             <button key={t.id} type="button" className={'theme-opt' + (sel === t.id ? ' on' : '')} onClick={() => choose(t.id)}>
               {t.name}
