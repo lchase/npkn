@@ -112,6 +112,30 @@ export function collectLabels(pages: Pick<Page, 'content'>[]): Map<string, numbe
   return counts
 }
 
+export interface LabelOption {
+  name: string
+  status: boolean
+  count: number
+}
+
+/** Everything `@` can complete to: the registry's labels (statuses included) plus every label in use. */
+export function labelOptions(reg: Registry, used: Map<string, number>): LabelOption[] {
+  const names = new Set([...Object.keys(reg), ...used.keys()])
+  return [...names].map(name => ({ name, status: isStatus(reg, name), count: used.get(name) ?? 0 }))
+}
+
+/** Rank labels for an `@query`: prefix beats substring; then statuses, then most used, then A-Z. */
+export function matchLabels(options: LabelOption[], query: string, limit = 8): LabelOption[] {
+  const q = norm(query)
+  const score = (n: string) => (!q || n.startsWith(q) ? 2 : n.includes(q) ? 1 : 0)
+  return options
+    .map(o => ({ o, s: score(o.name) }))
+    .filter(x => x.s > 0)
+    .sort((a, b) => b.s - a.s || +b.o.status - +a.o.status || b.o.count - a.o.count || a.o.name.localeCompare(b.o.name))
+    .slice(0, limit)
+    .map(x => x.o)
+}
+
 /**
  * CSS that colors chips from the registry. Selectors and values are built only from validated names and
  * hex colors, so a hand-edited front matter can't inject anything. Updating this stylesheet recolors

@@ -102,6 +102,8 @@ ul[data-type='taskList'] ul[data-type='taskList'] { margin-left: 0.3em; }
 .pl-item { padding: 5px 10px; border-radius: 6px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pl-item.on, .pl-item:hover { background: color-mix(in srgb, var(--accent) 16%, transparent); }
 .pl-item.create { color: var(--accent); border-top: 1px solid var(--line); border-radius: 0 0 6px 6px; margin-top: 2px; }
+.chip-opt { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.chip-opt-note { color: var(--muted); font-size: 12px; }
 .pl-empty { padding: 6px 10px; color: var(--muted); }
 
 .backlinks { margin-top: 56px; padding-top: 14px; border-top: 1px solid var(--line); }
