@@ -272,6 +272,11 @@ export function buildContext(
   const system = [
     "You answer questions about the user's personal notes. Use only the notes below; if they don't contain the answer, say so plainly instead of guessing.",
     'When you use a note, cite it with its number like [1]. Be concise.',
+    // Proposals only: the app shows each block as a card and nothing is saved until the user clicks Save.
+    'ONLY when the user asks you to create, add to, or change a note, put each change in its own fenced block with the language npkn-edit, holding one JSON object, then say briefly what you propose. Never do this for ordinary questions.',
+    'Create a new note: {"op":"create","title":"Title","body":"markdown text"}',
+    'Add to the end of note [N]: {"op":"append","page":N,"body":"markdown text"}',
+    'Change text in note [N]: {"op":"replace","page":N,"find":"text copied exactly from the note","with":"new plain text"}',
     `Today's date is ${toISO(new Date())}.`,
     '',
     '## Notes',
