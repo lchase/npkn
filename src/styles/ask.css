@@ -85,6 +85,18 @@
 .msg.assistant .msg-body { white-space: normal; }
 .msg.assistant .msg-body p { margin: 0 0 0.6em; }
 .msg.assistant .msg-body ul, .msg.assistant .msg-body ol { margin: 0 0 0.6em; padding-left: 1.4em; }
+.msg.assistant .msg-body li > ul, .msg.assistant .msg-body li > ol { margin: 0.2em 0 0; }
+.msg.assistant .msg-body li > p { margin: 0 0 0.3em; }
+.msg.assistant .msg-body hr { border: none; border-top: 1px solid var(--line); margin: 0.8em 0; }
+.msg.assistant .msg-body blockquote { margin: 0 0 0.6em; padding-left: 12px; border-left: 3px solid var(--line); color: var(--muted); }
+.msg.assistant .msg-body code { font-family: var(--font-mono); font-size: 0.9em; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+.msg.assistant .msg-body pre { margin: 0 0 0.6em; padding: 10px 12px; background: var(--code-bg); border-radius: 8px; overflow-x: auto; }
+.msg.assistant .msg-body pre code { padding: 0; background: none; }
+.md-table { overflow-x: auto; margin: 0 0 0.8em; }
+.md-table table { border-collapse: collapse; font-size: 0.92em; }
+.md-table th, .md-table td { text-align: left; padding: 5px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.md-table th { font-weight: 600; border-bottom-color: var(--muted); white-space: nowrap; }
+.md-table td a { word-break: normal; overflow-wrap: anywhere; }
 
 /* ---- ask empty state ---- */
 .ask-empty { padding: 28px 0; }
