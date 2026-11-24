@@ -29,9 +29,12 @@ export function PageEditor({ page }: { page: Page }) {
         const lines = pastedLinkLines(cd.getData('text/plain'))
         if (lines && editorRef.current) {
           e.preventDefault()
-          editorRef.current.commands.insertContent(
-            lines.length === 1 ? lines[0] : lines.map(content => ({ type: 'paragraph', content })),
-          )
+          // unsetMark drops the stored link mark, otherwise the next typed character extends the link.
+          editorRef.current
+            .chain()
+            .insertContent(lines.length === 1 ? lines[0] : lines.map(content => ({ type: 'paragraph', content })))
+            .unsetMark('link')
+            .run()
           return true
         }
         const md = pastedTableMarkdown(cd.getData('text/plain'))
