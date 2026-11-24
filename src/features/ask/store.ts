@@ -2,6 +2,7 @@ import { useSyncExternalStore } from 'react'
 import type { Page } from '../../core/types'
 import { buildContext, type Source } from './retrieve'
 import { activeProvider } from './config'
+import { isLooping, trimLoop } from './repetition'
 import type { ChatMessage } from './provider'
 import type { Mood } from './characters'
 
@@ -12,6 +13,8 @@ export interface Msg {
   error?: boolean
   /** Wall-clock ms from sending the question to the reply finishing. */
   ms?: number
+  /** The reply was cut off because the model was repeating itself (see repetition.ts). */
+  looped?: boolean
   /** performance.now() when the question was sent; drives the live timer while busy. */
   startedAt?: number
 }
@@ -89,10 +92,17 @@ export async function send(q: string, opts: { pages: Page[] }) {
   const ac = new AbortController()
   controller = ac
   let failed = false
+  let looped = false
   try {
     for await (const piece of active.provider.chat({ base: active.base, model: active.model, apiKey: active.apiKey, messages: payload, signal: ac.signal })) {
       if (state.mood !== 'talking') set({ mood: 'talking' })
       patchLast(m => ({ ...m, content: m.content + piece }))
+      if (isLooping(state.messages[state.messages.length - 1].content)) {
+        looped = true
+        patchLast(m => ({ ...m, content: trimLoop(m.content), looped: true }))
+        ac.abort() // closes the request so the model stops generating too
+        break
+      }
     }
   } catch (e) {
     if (!ac.signal.aborted) {
@@ -100,9 +110,10 @@ export async function send(q: string, opts: { pages: Page[] }) {
       patchLast(m => ({ ...m, error: true, content: m.content || (e as Error).message }))
     }
   } finally {
-    if (!failed && !ac.signal.aborted) patchLast(m => ({ ...m, ms: performance.now() - t0 }))
+    const stopped = ac.signal.aborted && !looped // the user pressed Stop; a loop cut-off still counts as an answer
+    if (!failed && !stopped) patchLast(m => ({ ...m, ms: performance.now() - t0 }))
     const gotText = !!state.messages[state.messages.length - 1]?.content
-    set({ busy: false, mood: failed ? 'error' : gotText && !ac.signal.aborted ? 'happy' : 'idle' })
+    set({ busy: false, mood: failed ? 'error' : gotText && !stopped ? 'happy' : 'idle' })
     if (!failed) calmTimer = window.setTimeout(() => set({ mood: 'idle' }), 1800)
   }
 }
