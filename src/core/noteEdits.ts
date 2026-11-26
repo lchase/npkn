@@ -22,6 +22,13 @@ const FENCE = /```([\w-]*)[ \t]*\r?\n([\s\S]*?)\r?\n?```/g
 const OPS = new Set(['create', 'append', 'replace'])
 // A block still being streamed: hide it rather than flash half a JSON object.
 const OPEN_FENCE = /```(?:npkn-edit|[\w-]*\s*\{\s*"op")[\s\S]*$/
+// Some small models (qwen3:4b-instruct) skip the fence and write the object as a bare line, sometimes
+// after the label. Counted only when the JSON has a known `op`. ponytail: one-line objects only.
+const BARE = /^[ \t]*(?:npkn-edit[ \t]*)?(\{.*\})[ \t]*$/gm
+// The same, still streaming at the end of the reply.
+const OPEN_BARE = /(^|\n)[ \t]*(?:npkn-edit[ \t]*)?\{\s*"op"[^\n]*$/
+// A label line left on its own (llama3.1 writes `npkn-edit` and then the fenced block).
+const LABEL = /^[ \t]*npkn-edit[ \t]*$/gm
 
 const MAX_BODY = 20000
 const str = (v: unknown, max: number) => (typeof v === 'string' && v.length <= max ? v : null)
@@ -58,6 +65,15 @@ function looksLikeEdit(json: string): boolean {
   }
 }
 
+const parses = (s: string) => {
+  try {
+    JSON.parse(s.replace(/^\s*(?:npkn-edit)?/, ''))
+    return true
+  } catch {
+    return false
+  }
+}
+
 /** Split a reply into what to show as text and the edits it proposes (complete fences only). */
 export function parseEdits(text: string): { text: string; edits: Edit[] } {
   const edits: Edit[] = []
@@ -68,6 +84,13 @@ export function parseEdits(text: string): { text: string; edits: Edit[] } {
       return ''
     })
     .replace(OPEN_FENCE, '')
+    .replace(BARE, (whole: string, json: string) => {
+      if (!looksLikeEdit(json)) return whole
+      edits.push(toEdit(json))
+      return ''
+    })
+    .replace(OPEN_BARE, (whole: string, lead: string) => (parses(whole) ? whole : lead))
+    .replace(LABEL, '')
   return { text: shown.replace(/\n{3,}/g, '\n\n').trim(), edits }
 }
 

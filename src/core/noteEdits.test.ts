@@ -46,6 +46,23 @@ describe('parseEdits', () => {
     expect(parseEdits(keep)).toEqual({ text: keep, edits: [] })
   })
 
+  it('accepts an unfenced edit on its own line, with or without the label', () => {
+    const obj = JSON.stringify({ op: 'create', title: 'Garden plan', body: '- kale' })
+    expect(parseEdits(obj)).toEqual({ text: '', edits: [{ op: 'create', title: 'Garden plan', body: '- kale' }] })
+    expect(parseEdits('Here you go.\nnpkn-edit ' + obj + '\nSave it?')).toEqual({
+      text: 'Here you go.\n\nSave it?',
+      edits: [{ op: 'create', title: 'Garden plan', body: '- kale' }],
+    })
+    const other = '{"name":"x"}'
+    expect(parseEdits(other)).toEqual({ text: other, edits: [] })
+    expect(parseEdits('Use {"op":"create"} inline').edits).toEqual([])
+  })
+
+  it('hides an unfenced edit still streaming and a stray label line', () => {
+    expect(parseEdits('Sure.\n{"op":"create","ti').text).toBe('Sure.')
+    expect(parseEdits('npkn-edit\n' + fence({ op: 'append', page: 1, body: 'x' }) + '\nAdded.').text).toBe('Added.')
+  })
+
   it('hides a fence that is still streaming and ignores ordinary code fences', () => {
     expect(parseEdits('Sure.\n```npkn-edit\n{"op":"crea').text).toBe('Sure.')
     expect(parseEdits('Sure.\n```\n{"op":"crea').text).toBe('Sure.')
