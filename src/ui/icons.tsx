@@ -84,3 +84,9 @@ export const ChevronDownIcon = ({ size }: { size?: number }) => (
 export const CloseIcon = ({ size }: { size?: number }) => (
   <Stroke size={size}><path d="m4 4 8 8M12 4l-8 8" /></Stroke>
 )
+export const CopyIcon = ({ size }: { size?: number }) => (
+  <Stroke size={size}><rect x="5.5" y="5.5" width="8" height="8" rx="1.5" /><path d="M10.5 3.5v-.2a.8.8 0 0 0-.8-.8H3.3a.8.8 0 0 0-.8.8v6.4a.8.8 0 0 0 .8.8h.2" /></Stroke>
+)
+export const FocusIcon = ({ size }: { size?: number }) => (
+  <Stroke size={size}><path d="M2.5 6V3.5a1 1 0 0 1 1-1H6M10 2.5h2.5a1 1 0 0 1 1 1V6M13.5 10v2.5a1 1 0 0 1-1 1H10M6 13.5H3.5a1 1 0 0 1-1-1V10" /></Stroke>
+)

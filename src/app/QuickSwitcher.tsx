@@ -51,7 +51,7 @@ export function QuickSwitcher({ pages, recent, onOpen, onCreate }: {
   }
 
   const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') close()
+    if (e.key === 'Escape') (e.preventDefault(), close())
     else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       e.preventDefault()
       if (items.length) setIndex((at + (e.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length)

@@ -32,6 +32,7 @@
 .dock-btn.danger:hover { color: var(--danger); }
 .dock-btn[aria-pressed='true'] { color: var(--accent); }
 .page-actions .dock-btn, .editor-bar .dock-btn { padding: 4px 8px; }
+.page-actions .dock-btn { white-space: nowrap; }
 .icon-btn {
   display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
   width: 28px; height: 28px; padding: 0; color: var(--muted);
@@ -125,3 +126,4 @@ button.nav-chevron:hover { background: color-mix(in srgb, var(--text) 12%, trans
   color: var(--text);
   border-radius: 2px;
 }
+.dock-btn.failed { color: var(--danger); border-color: var(--danger); }

@@ -19,6 +19,7 @@ import { PageView } from './PageView'
 import { QuickSwitcher } from './QuickSwitcher'
 import { SettingsView } from './SettingsView'
 import { Sidebar, type View } from './Sidebar'
+import { isFocusMode, setFocusMode, useFocusMode } from '../ui/display'
 
 const viewKey = (v: View) => (v.kind === 'page' ? `page:${v.id}` : v.kind)
 
@@ -31,18 +32,24 @@ export default function App() {
   const view = nav.stack[nav.at]
   const setView = useCallback((v: View) => setNav(n => push(n, v, viewKey)), [])
   const [query, setQuery] = useState('')
+  const focus = useFocusMode()
 
   const openToday = async () => setView({ kind: 'page', id: await dailyPage(toISO(new Date())) })
 
   // Cmd+[ / ] aren't bound by the editor (no indent keymap here), so they navigate even while typing.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      // Popups (find bar, switcher, link editor, suggestions) preventDefault their own Escape, so it closes them first.
+      if (e.key === 'Escape' && !e.defaultPrevented && isFocusMode()) return setFocusMode(false)
       if (!(e.metaKey || e.ctrlKey) || e.altKey) return
       const k = e.key.toLowerCase()
       if (!e.shiftKey && (k === '[' || k === ']')) {
         e.preventDefault()
         const ids = new Set(pages?.map(p => p.id))
         setNav(n => step(n, k === '[' ? -1 : 1, v => v.kind !== 'page' || ids.has(v.id), viewKey))
+      } else if (e.shiftKey && k === 'f') {
+        e.preventDefault()
+        setFocusMode(!isFocusMode())
       } else if (e.shiftKey && k === 'j') {
         e.preventDefault()
         openToday()
@@ -172,6 +179,11 @@ export default function App() {
       />
 
       <main>
+        {focus && (
+          <button className="focus-exit" onClick={() => setFocusMode(false)} title="Exit focus mode (Escape)">
+            Exit focus
+          </button>
+        )}
         {view.kind === 'ask' && <AskView pages={pages} onOpen={open} onOpenSettings={() => setView({ kind: 'settings' })} />}
         {view.kind === 'settings' && <SettingsView pages={pages} />}
         {view.kind === 'todos' && <TodosView pages={pages} onOpen={open} />}
