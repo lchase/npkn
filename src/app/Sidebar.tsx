@@ -3,6 +3,7 @@ import { isPinned, privateIds as privateIdsOf } from '../core/frontmatter'
 import { canMoveUnder } from '../core/tree'
 import { updatePage } from '../data/pages'
 import type { Page } from '../core/types'
+import type { SearchResult } from '../core/search'
 import { Avatar, type Mood } from '../features/ask/characters'
 import { useAsk } from '../features/ask/store'
 import { ThemePicker } from '../themes/ThemePicker'
@@ -15,7 +16,7 @@ interface Props {
   pages: Page[]
   view: View
   query: string
-  results: Page[] | null
+  results: SearchResult[] | null
   openTodoCount: number
   privateIds: Set<string>
   onQuery: (q: string) => void
@@ -280,10 +281,17 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
 
       {results ? (
         results.length ? (
-          results.map(p => (
-            <div key={p.id} className="nav-item" style={{ paddingLeft: 10 }} onClick={() => go({ kind: 'page', id: p.id })}>
+          results.map(({ page: p, snippet }) => (
+            <div key={p.id} className="nav-item search-result" style={{ paddingLeft: 10 }} onClick={() => go({ kind: 'page', id: p.id })}>
               <span className="nav-glyph"><PageIcon /></span>
-              <span className="nav-title">{p.title || 'Untitled'}</span>
+              <span className="search-text">
+                <span className="nav-title">{p.title || 'Untitled'}</span>
+                {snippet.length > 0 && (
+                  <span className="search-snippet">
+                    {snippet.map((s, i) => (s.hit ? <mark key={i}>{s.text}</mark> : s.text))}
+                  </span>
+                )}
+              </span>
             </div>
           ))
         ) : (
