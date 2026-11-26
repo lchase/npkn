@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { isPinned } from '../core/frontmatter'
+import { isPinned, privateIds as privateIdsOf } from '../core/frontmatter'
+import { canMoveUnder } from '../core/tree'
+import { updatePage } from '../data/pages'
 import type { Page } from '../core/types'
 import { Avatar, type Mood } from '../features/ask/characters'
 import { useAsk } from '../features/ask/store'
@@ -33,6 +35,7 @@ const ASK_STATUS: Record<Mood, string> = {
 }
 
 const KEY = 'npkn.collapsed'
+const ROOT = '\0root'
 
 function loadCollapsed(): Set<string> {
   try {
@@ -101,6 +104,53 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
     persist(next)
   }
 
+  // Drag a tree row onto another row to make it a child, or onto the Pages header / empty tree area
+  // for the top level. Only the parent changes; order stays alphabetical.
+  const [dragId, setDragId] = useState<string | null>(null)
+  const [dropOn, setDropOn] = useState<string | null>(null) // page id, or ROOT
+  const canDrop = (target: string | null) => {
+    const p = dragId ? pages.find(x => x.id === dragId) : undefined
+    return !!p && (p.parentId ?? null) !== target && canMoveUnder(pages, p.id, target)
+  }
+  const dropProps = (target: string | null) => {
+    const key = target ?? ROOT
+    return {
+      onDragOver: (e: React.DragEvent) => {
+        if (!dragId) return
+        // Always claim the event: an invalid row must not fall through to the top-level zone around it.
+        e.stopPropagation()
+        if (!canDrop(target)) return setDropOn(null)
+        e.preventDefault()
+        e.dataTransfer.dropEffect = 'move'
+        setDropOn(key)
+      },
+      onDragLeave: (e: React.DragEvent) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setDropOn(d => (d === key ? null : d))
+      },
+      onDrop: (e: React.DragEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        const id = dragId
+        setDragId(null)
+        setDropOn(null)
+        if (id && canDrop(target)) void move(id, target)
+      },
+    }
+  }
+  const move = async (id: string, parentId: string | null) => {
+    // Leaving a private subtree makes the page shareable with a cloud Ask provider, so ask first.
+    if (privateIds.has(id) && !privateIdsOf(pages.map(p => (p.id === id ? { ...p, parentId } : p))).has(id)) {
+      const title = pages.find(p => p.id === id)?.title || 'Untitled'
+      if (!confirm(`"${title}" will no longer be private, so Ask may send it to a cloud model. Move it?`)) return
+    }
+    await updatePage(id, { parentId })
+    if (parentId && collapsed.has(parentId)) {
+      const next = new Set(collapsed)
+      next.delete(parentId)
+      persist(next)
+    }
+  }
+
   const allCollapsed = parents.length > 0 && parents.every(id => collapsed.has(id))
   const toggleAll = () => persist(allCollapsed ? new Set() : new Set(parents))
 
@@ -123,9 +173,17 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
       return (
         <div key={p.id}>
           <div
-            className={'nav-item' + (view.kind === 'page' && view.id === p.id ? ' active' : '')}
+            className={'nav-item' + (view.kind === 'page' && view.id === p.id ? ' active' : '') + (dropOn === p.id ? ' drop-target' : '') + (dragId === p.id ? ' dragging' : '')}
             style={{ paddingLeft: 4 + depth * 12 }}
             onClick={() => go({ kind: 'page', id: p.id })}
+            draggable
+            onDragStart={e => {
+              e.dataTransfer.setData('text/plain', p.title || 'Untitled')
+              e.dataTransfer.effectAllowed = 'move'
+              setDragId(p.id)
+            }}
+            onDragEnd={() => (setDragId(null), setDropOn(null))}
+            {...dropProps(p.id)}
           >
             {hasKids ? (
               <button
@@ -206,7 +264,7 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
         </>
       )}
 
-      <div className="section-head">
+      <div className={'section-head' + (dropOn === ROOT ? ' drop-target' : '')} {...dropProps(null)}>
         <span>Pages</span>
         <span className="section-actions">
           {parents.length > 0 && (
@@ -232,7 +290,9 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
           <p className="empty small">No matches</p>
         )
       ) : (
-        tree(null)
+        <div className={'nav-tree' + (dropOn === ROOT ? ' drop-target' : '')} {...dropProps(null)}>
+          {tree(null)}
+        </div>
       )}
 
       <div className="sidebar-dock">
