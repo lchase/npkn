@@ -6,7 +6,6 @@ import type { Page } from '../core/types'
 import type { SearchResult } from '../core/search'
 import { Avatar, type Mood } from '../features/ask/characters'
 import { useAsk } from '../features/ask/store'
-import { ThemePicker } from '../themes/ThemePicker'
 import { NotebookFolder } from './NotebookFolder'
 import { ExportIcon, ImportIcon, LockIcon, PageIcon, PlusIcon, SampleIcon, SearchIcon, SettingsIcon, TodayIcon, TodosIcon } from '../ui/icons'
 
@@ -332,7 +331,6 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
           />
         </div>
         <NotebookFolder />
-        <ThemePicker />
       </div>
     </aside>
   )

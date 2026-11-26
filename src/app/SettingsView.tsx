@@ -18,6 +18,7 @@ import { activeProvider, setAiConfig, useAiConfig, type AiConfig } from '../feat
 import { OPENAI_PRESETS } from '../features/ask/openai'
 import { PROVIDERS, PROVIDER_ORDER, type ProviderId } from '../features/ask/providers'
 import { pickDefaultModel } from '../features/ask/useModels'
+import { ThemePicker } from '../themes/ThemePicker'
 import { WIDTHS, setPageWidth, usePageWidth } from '../ui/display'
 
 type Test = { state: 'idle' } | { state: 'testing' } | { state: 'ok'; models: string[] } | { state: 'error'; message: string }
@@ -241,6 +242,8 @@ export function SettingsView({ pages }: { pages: Page[] }) {
             </button>
           ))}
         </div>
+        <p className="set-sub theme-sub">Theme. Hover one to preview it, click to use it.</p>
+        <ThemePicker />
       </section>
 
       <section>
@@ -406,7 +409,7 @@ export function SettingsView({ pages }: { pages: Page[] }) {
       <section>
         <h2>Elsewhere</h2>
         <p className="set-sub">
-          Theme and light/dark are in the sidebar footer, and the notebook folder is just above it. The assistant's character is under
+          The notebook folder is in the sidebar footer. The assistant's character is under
           Ask → Character.
         </p>
       </section>
