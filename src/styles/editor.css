@@ -104,6 +104,32 @@ ul[data-type='taskList'] ul[data-type='taskList'] { margin-left: 0.3em; }
 .pl-item.create { color: var(--accent); border-top: 1px solid var(--line); border-radius: 0 0 6px 6px; margin-top: 2px; }
 .pl-empty { padding: 6px 10px; color: var(--muted); }
 
+/* Quick switcher (Cmd/Ctrl+P): the same rows as the `[[` picker, centred near the top. */
+.qs-backdrop { position: fixed; inset: 0; z-index: 60; display: flex; justify-content: center; align-items: flex-start; padding: 12vh 16px 0; }
+.qs {
+  width: min(520px, 100%);
+  padding: 6px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  font-size: 14px;
+}
+.qs input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  margin-bottom: 4px;
+  font: inherit;
+  font-size: 15px;
+  color: var(--text);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  outline: none;
+}
+.qs-list { max-height: 50vh; overflow-y: auto; }
+
 .backlinks { margin-top: 56px; padding-top: 14px; border-top: 1px solid var(--line); }
 .backlinks h4 {
   margin: 0 0 6px;

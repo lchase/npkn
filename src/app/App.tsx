@@ -15,6 +15,7 @@ import { ensureWelcome } from '../data/seed'
 import { AskView } from '../features/ask/AskView'
 import { TodosView } from '../features/todos/TodosView'
 import { PageView } from './PageView'
+import { QuickSwitcher } from './QuickSwitcher'
 import { SettingsView } from './SettingsView'
 import { Sidebar, type View } from './Sidebar'
 
@@ -116,6 +117,15 @@ export default function App() {
   return (
     <div className="app">
       <style>{labelStyles}</style>
+      <QuickSwitcher
+        pages={pages}
+        onOpen={open}
+        onCreate={async title => {
+          const p = newPage(null, title)
+          await addPage(p)
+          open(p.id)
+        }}
+      />
       <Sidebar
         pages={pages}
         view={view}
