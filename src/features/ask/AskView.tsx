@@ -173,7 +173,11 @@ export function AskView({ pages, onOpen, onOpenSettings }: { pages: Page[]; onOp
                   label={m.content ? 'Answering' : m.sources?.length ? `Reading ${m.sources.length} note${m.sources.length === 1 ? '' : 's'}` : 'Thinking'}
                 />
               )}
-              {m.ms != null && <div className="msg-meta">{(m.ms / 1000).toFixed(1)} s</div>}
+              {m.ms != null && (
+                <div className="msg-meta">
+                  {(m.ms / 1000).toFixed(1)} s{m.looped ? ' · stopped: the model was repeating itself' : ''}
+                </div>
+              )}
             </div>
             )
           })}

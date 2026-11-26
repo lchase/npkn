@@ -4,6 +4,8 @@
  * keeps it current; the editor only reads it. A module-level singleton on purpose: editor extensions are
  * created outside React and must not import app code.
  */
+import type { LabelOption } from '../core/labels'
+
 export interface DirPage {
   id: string
   title: string
@@ -11,12 +13,15 @@ export interface DirPage {
 
 export interface PageDirectory {
   pages: DirPage[]
+  /** Labels the `@` picker can complete (core/labels `labelOptions`). */
+  labels: LabelOption[]
   navigate: (id: string) => void
   create: (title: string) => Promise<DirPage>
 }
 
 let current: PageDirectory = {
   pages: [],
+  labels: [],
   navigate: () => {},
   create: async title => ({ id: '', title }),
 }

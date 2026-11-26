@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { isPinned } from '../core/frontmatter'
+import { isPinned, privateIds as privateIdsOf } from '../core/frontmatter'
+import { canMoveUnder } from '../core/tree'
+import { updatePage } from '../data/pages'
 import type { Page } from '../core/types'
+import type { SearchResult } from '../core/search'
 import { Avatar, type Mood } from '../features/ask/characters'
 import { useAsk } from '../features/ask/store'
-import { ThemePicker } from '../themes/ThemePicker'
 import { NotebookFolder } from './NotebookFolder'
-import { ExportIcon, ImportIcon, LockIcon, PageIcon, PlusIcon, SampleIcon, SearchIcon, SettingsIcon, TodosIcon } from '../ui/icons'
+import { ExportIcon, ImportIcon, LockIcon, PageIcon, PlusIcon, SampleIcon, SearchIcon, SettingsIcon, TodayIcon, TodosIcon } from '../ui/icons'
 
 export type View = { kind: 'todos' } | { kind: 'ask' } | { kind: 'settings' } | { kind: 'page'; id: string }
 
@@ -13,7 +15,7 @@ interface Props {
   pages: Page[]
   view: View
   query: string
-  results: Page[] | null
+  results: SearchResult[] | null
   openTodoCount: number
   privateIds: Set<string>
   onQuery: (q: string) => void
@@ -22,6 +24,7 @@ interface Props {
   onImport: (files: FileList | null) => void
   onExportBundle: () => void
   onLoadSample: () => void
+  onToday: () => void
 }
 
 const ASK_STATUS: Record<Mood, string> = {
@@ -33,6 +36,7 @@ const ASK_STATUS: Record<Mood, string> = {
 }
 
 const KEY = 'npkn.collapsed'
+const ROOT = '\0root'
 
 function loadCollapsed(): Set<string> {
   try {
@@ -47,7 +51,7 @@ const byTitle = (a: Page, b: Page) =>
   (a.title || 'Untitled').localeCompare(b.title || 'Untitled', undefined, { sensitivity: 'base', numeric: true }) ||
   a.id.localeCompare(b.id)
 
-export function Sidebar({ pages, view, query, results, openTodoCount, privateIds, onQuery, onView, onAdd, onImport, onExportBundle, onLoadSample }: Props) {
+export function Sidebar({ pages, view, query, results, openTodoCount, privateIds, onQuery, onView, onAdd, onImport, onExportBundle, onLoadSample, onToday }: Props) {
   const { displayMood } = useAsk()
   const importInput = useRef<HTMLInputElement>(null)
   const [collapsed, setCollapsed] = useState(loadCollapsed)
@@ -101,6 +105,53 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
     persist(next)
   }
 
+  // Drag a tree row onto another row to make it a child, or onto the Pages header / empty tree area
+  // for the top level. Only the parent changes; order stays alphabetical.
+  const [dragId, setDragId] = useState<string | null>(null)
+  const [dropOn, setDropOn] = useState<string | null>(null) // page id, or ROOT
+  const canDrop = (target: string | null) => {
+    const p = dragId ? pages.find(x => x.id === dragId) : undefined
+    return !!p && (p.parentId ?? null) !== target && canMoveUnder(pages, p.id, target)
+  }
+  const dropProps = (target: string | null) => {
+    const key = target ?? ROOT
+    return {
+      onDragOver: (e: React.DragEvent) => {
+        if (!dragId) return
+        // Always claim the event: an invalid row must not fall through to the top-level zone around it.
+        e.stopPropagation()
+        if (!canDrop(target)) return setDropOn(null)
+        e.preventDefault()
+        e.dataTransfer.dropEffect = 'move'
+        setDropOn(key)
+      },
+      onDragLeave: (e: React.DragEvent) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setDropOn(d => (d === key ? null : d))
+      },
+      onDrop: (e: React.DragEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        const id = dragId
+        setDragId(null)
+        setDropOn(null)
+        if (id && canDrop(target)) void move(id, target)
+      },
+    }
+  }
+  const move = async (id: string, parentId: string | null) => {
+    // Leaving a private subtree makes the page shareable with a cloud Ask provider, so ask first.
+    if (privateIds.has(id) && !privateIdsOf(pages.map(p => (p.id === id ? { ...p, parentId } : p))).has(id)) {
+      const title = pages.find(p => p.id === id)?.title || 'Untitled'
+      if (!confirm(`"${title}" will no longer be private, so Ask may send it to a cloud model. Move it?`)) return
+    }
+    await updatePage(id, { parentId })
+    if (parentId && collapsed.has(parentId)) {
+      const next = new Set(collapsed)
+      next.delete(parentId)
+      persist(next)
+    }
+  }
+
   const allCollapsed = parents.length > 0 && parents.every(id => collapsed.has(id))
   const toggleAll = () => persist(allCollapsed ? new Set() : new Set(parents))
 
@@ -123,9 +174,17 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
       return (
         <div key={p.id}>
           <div
-            className={'nav-item' + (view.kind === 'page' && view.id === p.id ? ' active' : '')}
+            className={'nav-item' + (view.kind === 'page' && view.id === p.id ? ' active' : '') + (dropOn === p.id ? ' drop-target' : '') + (dragId === p.id ? ' dragging' : '')}
             style={{ paddingLeft: 4 + depth * 12 }}
             onClick={() => go({ kind: 'page', id: p.id })}
+            draggable
+            onDragStart={e => {
+              e.dataTransfer.setData('text/plain', p.title || 'Untitled')
+              e.dataTransfer.effectAllowed = 'move'
+              setDragId(p.id)
+            }}
+            onDragEnd={() => (setDragId(null), setDropOn(null))}
+            {...dropProps(p.id)}
           >
             {hasKids ? (
               <button
@@ -181,6 +240,10 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
         <span className="nav-title">Todos</span>
         {openTodoCount > 0 && <span className="badge">{openTodoCount}</span>}
       </div>
+      <div className="nav-item nav-primary" title="Today's journal page (Cmd/Ctrl+Shift+J)" onClick={() => (onQuery(''), onToday())}>
+        <span className="nav-glyph"><TodayIcon /></span>
+        <span className="nav-title">Today</span>
+      </div>
       <div className={'nav-item nav-primary' + (view.kind === 'settings' ? ' active' : '')} onClick={() => go({ kind: 'settings' })}>
         <span className="nav-glyph"><SettingsIcon /></span>
         <span className="nav-title">Settings</span>
@@ -206,7 +269,7 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
         </>
       )}
 
-      <div className="section-head">
+      <div className={'section-head' + (dropOn === ROOT ? ' drop-target' : '')} {...dropProps(null)}>
         <span>Pages</span>
         <span className="section-actions">
           {parents.length > 0 && (
@@ -222,17 +285,26 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
 
       {results ? (
         results.length ? (
-          results.map(p => (
-            <div key={p.id} className="nav-item" style={{ paddingLeft: 10 }} onClick={() => go({ kind: 'page', id: p.id })}>
+          results.map(({ page: p, snippet }) => (
+            <div key={p.id} className="nav-item search-result" style={{ paddingLeft: 10 }} onClick={() => go({ kind: 'page', id: p.id })}>
               <span className="nav-glyph"><PageIcon /></span>
-              <span className="nav-title">{p.title || 'Untitled'}</span>
+              <span className="search-text">
+                <span className="nav-title">{p.title || 'Untitled'}</span>
+                {snippet.length > 0 && (
+                  <span className="search-snippet">
+                    {snippet.map((s, i) => (s.hit ? <mark key={i}>{s.text}</mark> : s.text))}
+                  </span>
+                )}
+              </span>
             </div>
           ))
         ) : (
           <p className="empty small">No matches</p>
         )
       ) : (
-        tree(null)
+        <div className={'nav-tree' + (dropOn === ROOT ? ' drop-target' : '')} {...dropProps(null)}>
+          {tree(null)}
+        </div>
       )}
 
       <div className="sidebar-dock">
@@ -259,7 +331,6 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
           />
         </div>
         <NotebookFolder />
-        <ThemePicker />
       </div>
     </aside>
   )
