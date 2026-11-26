@@ -18,6 +18,7 @@ import { activeProvider, setAiConfig, useAiConfig, type AiConfig } from '../feat
 import { OPENAI_PRESETS } from '../features/ask/openai'
 import { PROVIDERS, PROVIDER_ORDER, type ProviderId } from '../features/ask/providers'
 import { pickDefaultModel } from '../features/ask/useModels'
+import { ThemePicker } from '../themes/ThemePicker'
 import { WIDTHS, setPageWidth, usePageWidth } from '../ui/display'
 
 type Test = { state: 'idle' } | { state: 'testing' } | { state: 'ok'; models: string[] } | { state: 'error'; message: string }
@@ -40,6 +41,24 @@ const BLURB: Record<ProviderId, string> = {
   anthropic: 'Claude, using your own Anthropic API key.',
   openai: 'OpenAI, or any OpenAI-compatible service such as OpenRouter or LM Studio.',
 }
+
+const MOD = /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘' : 'Ctrl+'
+
+// ponytail: hand-kept list; update it when a shortcut or input rule is added.
+const SHORTCUTS: [string, string][] = [
+  ['ModP', 'Go to page (Mod+Enter creates it)'],
+  ['Mod[  Mod]', 'Back / forward'],
+  ['Mod⇧J', "Today's journal page"],
+  ['ModF', 'Find in page'],
+  ['ModK', 'Edit link, or link the selection'],
+  ['/', 'Block menu: headings, lists, table, code…'],
+  ['[[', 'Link to a page'],
+  ['[] ', 'Todo'],
+  ['## ', 'Heading (# to ######)'],
+  ['```ts ', 'Code block with language'],
+  ['@fri  @today', 'Date chip'],
+  ['@doing  @done', 'Status or label chip'],
+]
 
 export function SettingsView({ pages }: { pages: Page[] }) {
   const cfg = useAiConfig()
@@ -241,6 +260,8 @@ export function SettingsView({ pages }: { pages: Page[] }) {
             </button>
           ))}
         </div>
+        <p className="set-sub theme-sub">Theme. Hover one to preview it, click to use it.</p>
+        <ThemePicker />
       </section>
 
       <section>
@@ -404,9 +425,23 @@ export function SettingsView({ pages }: { pages: Page[] }) {
       </section>
 
       <section>
+        <h2>Keyboard shortcuts</h2>
+        <dl className="shortcuts">
+          {SHORTCUTS.map(([keys, what]) => (
+            <div key={keys}>
+              <dt>
+                <kbd>{keys.replace(/Mod\+?/g, MOD)}</kbd>
+              </dt>
+              <dd>{what.replace(/Mod\+?/g, MOD)}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      <section>
         <h2>Elsewhere</h2>
         <p className="set-sub">
-          Theme and light/dark are in the sidebar footer, and the notebook folder is just above it. The assistant's character is under
+          The notebook folder is in the sidebar footer. The assistant's character is under
           Ask → Character.
         </p>
       </section>

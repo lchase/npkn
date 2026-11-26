@@ -68,27 +68,60 @@ button.nav-chevron:hover { background: color-mix(in srgb, var(--text) 12%, trans
 }
 .section-actions { display: inline-flex; align-items: center; gap: 2px; }
 
-.notebook-folder {
-  padding: 8px 8px 8px 10px; font-size: 12px; color: var(--muted);
-  border: 1px solid var(--line); border-radius: var(--radius);
-  background: color-mix(in srgb, var(--text) 3%, transparent);
+/* Notebook folder: one quiet status line; details open upward in a small popover. */
+.notebook-folder { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.nf-details { position: relative; flex: 1; min-width: 0; }
+.nf-bar {
+  display: flex; align-items: center; gap: 6px; padding: 3px 6px; list-style: none; cursor: pointer;
+  border-radius: var(--radius); font: 11px var(--font-mono);
 }
-.nf-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
-.nf-names { min-width: 0; }
-.nf-icons { display: inline-flex; gap: 2px; }
-.nf-path { color: var(--text); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.nf-title { font: 11px var(--font-mono); }
-.nf-status { display: flex; align-items: center; gap: 6px; margin-top: 6px; font: 11px var(--font-mono); }
-.nf-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--muted); flex: 0 0 auto; }
-.nf-status.idle::before { background: var(--ok); }
-.nf-status.syncing { color: var(--accent); }
-.nf-status.syncing::before { background: var(--accent); }
-.nf-status.error, .nf-status.needs-permission { color: var(--danger); }
+.nf-bar::-webkit-details-marker { display: none; }
+.nf-bar:hover, .nf-details[open] .nf-bar { color: var(--text); background: color-mix(in srgb, var(--text) 6%, transparent); }
+.nf-bar::before, .nf-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--muted); flex: 0 0 auto; }
+.nf-bar.idle::before, .nf-status.idle::before { background: var(--ok); }
+.nf-bar.syncing::before, .nf-status.syncing::before { background: var(--accent); }
+.nf-bar.error::before, .nf-bar.needs-permission::before,
 .nf-status.error::before, .nf-status.needs-permission::before { background: var(--danger); }
-.nf-actions { margin-top: 6px; }
-.nf-actions .dock-btn { width: 100%; }
+.nf-bar.error, .nf-bar.needs-permission, .nf-status.error, .nf-status.needs-permission { color: var(--danger); }
+.nf-path { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nf-time { flex: 0 0 auto; }
+.nf-pop {
+  position: absolute; bottom: calc(100% + 4px); left: 0; right: 0; z-index: 20;
+  display: flex; flex-direction: column; gap: 2px; padding: 6px;
+  background: var(--side); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: 0 6px 24px color-mix(in srgb, var(--text) 18%, transparent);
+}
+.nf-status { display: flex; align-items: center; gap: 6px; padding: 2px 4px; font: 11px var(--font-mono); }
+.nf-root { padding: 0 4px 4px; font: 11px var(--font-mono); overflow-wrap: anywhere; }
+.nf-opt, .nf-connect {
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px; font-size: 12px; color: var(--muted);
+  background: none; border: none; border-radius: var(--radius); text-align: left;
+}
+.nf-opt:hover, .nf-connect:hover { color: var(--text); background: color-mix(in srgb, var(--text) 8%, transparent); }
+.nf-connect { align-self: flex-start; padding: 3px 6px; }
+.nf-actions .dock-btn { padding: 2px 8px; color: var(--danger); }
 
 .nav-lock { display: inline-flex; align-items: center; color: var(--muted); flex: 0 0 auto; }
 
 .brand { display: flex; align-items: center; gap: 10px; padding: 2px 12px 16px; font: 600 20px/1 var(--font-heading); letter-spacing: -0.02em; }
 .brand img { display: block; }
+
+/* Search results: title plus a short snippet around the first body match. */
+.nav-item.search-result { align-items: flex-start; }
+.search-result .nav-glyph { margin-top: 1px; }
+.search-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+/* Two lines, not one: the ~80-char window rarely fits the sidebar's width, and the match sits mid-window. */
+.search-snippet {
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: var(--muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.search-snippet mark {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--text);
+  border-radius: 2px;
+}

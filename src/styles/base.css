@@ -84,6 +84,14 @@ aside {
 }
 .nav-item:hover { background: color-mix(in srgb, var(--text) 5%, transparent); }
 .nav-item.active { background: color-mix(in srgb, var(--text) 9%, transparent); color: var(--text); }
+/* Drag a page to re-parent it. The tree grows to fill the sidebar so its empty area is a top-level drop zone. */
+.nav-tree { flex: 1 0 auto; min-height: 24px; padding-bottom: 16px; border-radius: calc(var(--radius) * 1.5); }
+.nav-item.dragging { opacity: 0.45; }
+.nav-item.drop-target, .section-head.drop-target, .nav-tree.drop-target {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+.section-head.drop-target { border-radius: calc(var(--radius) * 1.5); }
 .nav-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .badge {
   background: color-mix(in srgb, var(--text) 10%, transparent);

@@ -3,6 +3,9 @@ import { EditorContent, useEditor } from '@tiptap/react'
 import Placeholder from '@tiptap/extension-placeholder'
 import { editorExtensions } from './extensions'
 import { PageLinks } from './pageLinks'
+import { SlashMenu } from './slashMenu'
+import { FindInPage } from './findInPage'
+import { FindBar } from './FindBar'
 import { TableBar } from './TableBar'
 import { markdownToPage, pastedTableMarkdown } from '../core/markdown'
 import { pastedLinkLines } from '../core/pasteLinks'
@@ -15,6 +18,22 @@ export function PageEditor({ page }: { page: Page }) {
   const dirty = useRef(false)
   const [linkTarget, setLinkTarget] = useState<LinkTarget | null>(null)
   const editorRef = useRef<ReturnType<typeof useEditor>>(null)
+  const [findOpen, setFindOpen] = useState(false)
+  const findInput = useRef<HTMLInputElement>(null)
+
+  // Cmd/Ctrl+F opens the page's find bar. In a browser only while focus is inside the page, so the
+  // native find still works from the sidebar; the desktop shell has no native find, so always there.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!(e.metaKey || e.ctrlKey) || e.altKey || e.shiftKey || e.key.toLowerCase() !== 'f') return
+      if (!window.npknDesktop && !(document.activeElement as HTMLElement | null)?.closest('.page')) return
+      e.preventDefault()
+      setFindOpen(true)
+      findInput.current?.select()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
 
   const editor = useEditor({
     editorProps: {
@@ -50,8 +69,11 @@ export function PageEditor({ page }: { page: Page }) {
     },
     extensions: [
       ...editorExtensions,
-      PageLinks, // interactive only: kept out of the schema list so markdown import stays free of UI code
-      Placeholder.configure({ placeholder: 'Start writing…  try ## , - , [] , @work , @fri' }),
+      // Interactive only: kept out of the schema list so markdown import stays free of UI code.
+      PageLinks,
+      SlashMenu,
+      FindInPage,
+      Placeholder.configure({ placeholder: 'Start writing…  type / for blocks, or try ## , [] , @fri' }),
     ],
     content: page.content ?? '',
     autofocus: page.content ? false : 'end',
@@ -82,6 +104,7 @@ export function PageEditor({ page }: { page: Page }) {
 
   return (
     <>
+      {editor && findOpen && <FindBar editor={editor} inputRef={findInput} onClose={() => setFindOpen(false)} />}
       {editor && <TableBar editor={editor} />}
       <EditorContent editor={editor} className="editor" />
       {editor && linkTarget && <LinkEditor editor={editor} target={linkTarget} onClose={() => setLinkTarget(null)} />}
