@@ -3,7 +3,7 @@ import { buildWelcome } from './welcome'
 
 const WELCOME_ID = 'welcome'
 // Bump to push a new Welcome/style-guide page. It overwrites the existing one, edits included.
-const WELCOME_VERSION = '6'
+const WELCOME_VERSION = '7'
 const WELCOME_KEY = 'npkn.welcome'
 
 /**
