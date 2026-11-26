@@ -11,6 +11,10 @@
   --accent: #2f6fed;
   --danger: #c4372c;
   --ok: #3f8a68;
+  --pr-open: #3f8a68;
+  --pr-draft: #8a8780;
+  --pr-merged: #7c4dcc;
+  --pr-closed: #8a8780;
   --code-bg: #f3f1ec;
   --code-fg: var(--syn-keyword);
   --chip-bg-sat: 70%;

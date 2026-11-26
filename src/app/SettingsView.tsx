@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   GROUPS,
   GROUP_LABEL,
@@ -18,6 +18,8 @@ import { activeProvider, setAiConfig, useAiConfig, type AiConfig } from '../feat
 import { OPENAI_PRESETS } from '../features/ask/openai'
 import { PROVIDERS, PROVIDER_ORDER, type ProviderId } from '../features/ask/providers'
 import { pickDefaultModel } from '../features/ask/useModels'
+import { verifyToken } from '../features/github/client'
+import { setGithubConfig, useGithubConfig } from '../features/github/config'
 import { ThemePicker } from '../themes/ThemePicker'
 import { WIDTHS, setPageWidth, usePageWidth } from '../ui/display'
 
@@ -315,6 +317,8 @@ export function SettingsView({ pages }: { pages: Page[] }) {
         </div>
       </section>
 
+      <GithubSection />
+
       <section>
         <h2>Labels and statuses</h2>
         <p className="set-sub">
@@ -446,5 +450,102 @@ export function SettingsView({ pages }: { pages: Page[] }) {
         </p>
       </section>
     </div>
+  )
+}
+
+type TokenCheck = { state: 'checking' } | { state: 'ok'; login: string } | { state: 'error'; message: string }
+
+/** Settings > GitHub: pull request badges in pages. Off by default; turning it on is the consent. */
+function GithubSection() {
+  const gh = useGithubConfig()
+  const [draft, setDraft] = useState(gh.token)
+  const [reveal, setReveal] = useState(false)
+  const [check, setCheck] = useState<TokenCheck | null>(null)
+
+  // Verify a saved token with GET /user, but only while the feature is on: off means nothing is sent.
+  useEffect(() => {
+    setCheck(null)
+    if (!gh.enabled || !gh.token) return
+    let live = true
+    setCheck({ state: 'checking' })
+    verifyToken(gh.token).then(
+      login => live && setCheck({ state: 'ok', login }),
+      (e: Error) => live && setCheck({ state: 'error', message: e.message }),
+    )
+    return () => {
+      live = false
+    }
+  }, [gh.enabled, gh.token])
+
+  // The token is saved when the field is left (or Enter), not per keystroke, so it is verified once.
+  const save = (t = draft.trim()) => {
+    setDraft(t)
+    if (t !== gh.token) setGithubConfig({ token: t })
+  }
+
+  return (
+    <section>
+      <h2>GitHub</h2>
+      <p className="set-sub">A badge after each pull request link in your pages shows whether it is open, draft, merged or closed.</p>
+      <label className="set-toggle">
+        <input type="checkbox" checked={gh.enabled} onChange={e => setGithubConfig({ enabled: e.target.checked })} />
+        Show pull request status
+      </label>
+      <div className="set-github">
+        <label className="set-field">
+          <span>Token (optional, needed for private repositories)</span>
+          <span className="set-key">
+            <input
+              type={reveal ? 'text' : 'password'}
+              autoComplete="off"
+              spellCheck={false}
+              value={draft}
+              placeholder="github_pat_…"
+              onChange={e => setDraft(e.target.value)}
+              onBlur={() => save()}
+              onKeyDown={e => e.key === 'Enter' && save()}
+            />
+            <button type="button" className="linklike" onClick={() => setReveal(r => !r)}>
+              {reveal ? 'Hide' : 'Show'}
+            </button>
+            {(draft || gh.token) && (
+              <button type="button" className="linklike" onClick={() => save('')}>
+                Clear
+              </button>
+            )}
+          </span>
+        </label>
+        {check && (
+          <div className="set-test">
+            {check.state === 'checking' && <span className="set-hint">Checking the token…</span>}
+            {check.state === 'ok' && <span className="ok">Connected as @{check.login}</span>}
+            {check.state === 'error' && <span className="bad">{check.message}</span>}
+          </div>
+        )}
+        <p className="set-hint">
+          Use a{' '}
+          <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">
+            fine-grained token
+          </a>{' '}
+          with <strong>Pull requests: read</strong> on the repositories you link to. Classic tokens work too, but need the
+          full <code>repo</code> scope and must be authorized for each organization that uses SSO. Without a token, public
+          pull requests still get badges, checked less often.
+        </p>
+        <div className="set-field">
+          <span>Badge style</span>
+          <span className="set-presets">
+            {(['pill', 'title'] as const).map(st => (
+              <button key={st} className={gh.style === st ? 'on' : ''} onClick={() => setGithubConfig({ style: st })}>
+                {st === 'pill' ? 'Pill' : 'Title'}
+              </button>
+            ))}
+          </span>
+        </div>
+      </div>
+      <div className="set-privacy cloud">
+        Sends owner/repo/number of PR links in your pages, including private pages, to api.github.com. Nothing else.
+        The token is stored in this browser or app only, in plain text, and sent only to GitHub.
+      </div>
+    </section>
   )
 }

@@ -10,6 +10,8 @@ import { extractTodos } from '../core/todos'
 import { collectLabels, labelCss, labelOptions, registryFromPages } from '../core/labels'
 import { addPage, backfillCreatedAt, dailyPage, deletePageTree, newPage, updatePage, usePages } from '../data/pages'
 import { setPageDirectory } from '../editor/pageDirectory'
+import { setPrBadgeSource } from '../editor/prBadges'
+import { prBadgeSource } from '../features/github/status'
 import { loadSampleNotebook } from '../data/sample'
 import { startFolderSync } from '../data/folderSync'
 import { ensureWelcome } from '../data/seed'
@@ -19,6 +21,9 @@ import { PageView } from './PageView'
 import { QuickSwitcher } from './QuickSwitcher'
 import { SettingsView } from './SettingsView'
 import { Sidebar, type View } from './Sidebar'
+
+// PR badges in the editor read GitHub state through this; the editor never imports a feature.
+setPrBadgeSource(prBadgeSource)
 
 const viewKey = (v: View) => (v.kind === 'page' ? `page:${v.id}` : v.kind)
 
