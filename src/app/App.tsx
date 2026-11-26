@@ -7,7 +7,7 @@ import { resolveRelativeLinks } from '../core/links'
 import { markdownToPage } from '../core/markdown'
 import { searchPages } from '../core/search'
 import { extractTodos } from '../core/todos'
-import { labelCss, registryFromPages } from '../core/labels'
+import { collectLabels, labelCss, labelOptions, registryFromPages } from '../core/labels'
 import { addPage, backfillCreatedAt, dailyPage, deletePageTree, newPage, updatePage, usePages } from '../data/pages'
 import { setPageDirectory } from '../editor/pageDirectory'
 import { loadSampleNotebook } from '../data/sample'
@@ -76,6 +76,7 @@ export default function App() {
   useEffect(() => {
     setPageDirectory({
       pages: (pages ?? []).map(p => ({ id: p.id, title: p.title || 'Untitled' })),
+      labels: labelOptions(registryFromPages(pages ?? []), collectLabels(pages ?? [])),
       navigate: id => setView({ kind: 'page', id }),
       create: async title => {
         const p = newPage(null, title)

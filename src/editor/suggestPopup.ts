@@ -1,13 +1,15 @@
 import type { SuggestionOptions } from '@tiptap/suggestion'
 
 /**
- * The small list popup shared by the `[[` page picker and the `/` menu (`.pl-popup` / `.pl-item`).
+ * The small list popup shared by the `[[` page picker, the `/` menu and `@` label suggestions
+ * (`.pl-popup` / `.pl-item`). `content` replaces a row's plain label with custom nodes.
  * Arrows move, Enter or Tab picks, Escape hides it until the suggestion ends. With no `empty` text an
  * empty list hides the popup and lets keys through, so Enter still makes a new line.
  */
 export function suggestPopup<T>(opts: {
   label: (item: T) => string
   className?: (item: T) => string
+  content?: (item: T) => Node[]
   empty?: string
 }): SuggestionOptions<T, T>['render'] {
   return () => {
@@ -31,7 +33,8 @@ export function suggestPopup<T>(opts: {
       items.forEach((it, i) => {
         const row = document.createElement('div')
         row.className = 'pl-item' + (i === index ? ' on' : '') + (opts.className ? ' ' + opts.className(it) : '')
-        row.textContent = opts.label(it)
+        if (opts.content) row.append(...opts.content(it))
+        else row.textContent = opts.label(it)
         // mousedown, not click: a click would blur the editor and end the suggestion first.
         row.addEventListener('mousedown', e => {
           e.preventDefault()

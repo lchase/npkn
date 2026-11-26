@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { EditorContent, useEditor } from '@tiptap/react'
 import Placeholder from '@tiptap/extension-placeholder'
 import { editorExtensions } from './extensions'
+import { ChipSuggest } from './chipSuggest'
 import { PageLinks } from './pageLinks'
 import { SlashMenu } from './slashMenu'
 import { FindInPage } from './findInPage'
@@ -71,6 +72,7 @@ export function PageEditor({ page }: { page: Page }) {
     extensions: [
       ...editorExtensions,
       // Interactive only: kept out of the schema list so markdown import stays free of UI code.
+      ChipSuggest,
       PageLinks,
       SlashMenu,
       FindInPage,
