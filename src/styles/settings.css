@@ -164,3 +164,16 @@
 .width-full i { width: 100%; }
 @media (max-width: 640px) { .width-options { grid-template-columns: 1fr; } }
 .theme-sub { margin-top: 22px; }
+
+.shortcuts { margin: 8px 0 0; display: grid; gap: 4px; }
+.shortcuts > div { display: flex; gap: 12px; align-items: baseline; }
+.shortcuts dt { flex: 0 0 140px; }
+.shortcuts dd { margin: 0; color: var(--muted); }
+.shortcuts kbd {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 1px 6px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  white-space: pre;
+}

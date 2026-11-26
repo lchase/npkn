@@ -42,6 +42,24 @@ const BLURB: Record<ProviderId, string> = {
   openai: 'OpenAI, or any OpenAI-compatible service such as OpenRouter or LM Studio.',
 }
 
+const MOD = /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘' : 'Ctrl+'
+
+// ponytail: hand-kept list; update it when a shortcut or input rule is added.
+const SHORTCUTS: [string, string][] = [
+  ['ModP', 'Go to page (Mod+Enter creates it)'],
+  ['Mod[  Mod]', 'Back / forward'],
+  ['Mod⇧J', "Today's journal page"],
+  ['ModF', 'Find in page'],
+  ['ModK', 'Edit link, or link the selection'],
+  ['/', 'Block menu: headings, lists, table, code…'],
+  ['[[', 'Link to a page'],
+  ['[] ', 'Todo'],
+  ['## ', 'Heading (# to ######)'],
+  ['```ts ', 'Code block with language'],
+  ['@fri  @today', 'Date chip'],
+  ['@doing  @done', 'Status or label chip'],
+]
+
 export function SettingsView({ pages }: { pages: Page[] }) {
   const cfg = useAiConfig()
   const width = usePageWidth()
@@ -404,6 +422,20 @@ export function SettingsView({ pages }: { pages: Page[] }) {
         <p className="set-hint">
           Stored in a page called <strong>Labels</strong> in your notebook, so it syncs and exports with everything else.
         </p>
+      </section>
+
+      <section>
+        <h2>Keyboard shortcuts</h2>
+        <dl className="shortcuts">
+          {SHORTCUTS.map(([keys, what]) => (
+            <div key={keys}>
+              <dt>
+                <kbd>{keys.replace(/Mod\+?/g, MOD)}</kbd>
+              </dt>
+              <dd>{what.replace(/Mod\+?/g, MOD)}</dd>
+            </div>
+          ))}
+        </dl>
       </section>
 
       <section>
