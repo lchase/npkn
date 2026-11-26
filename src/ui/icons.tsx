@@ -72,3 +72,12 @@ export const TrashIcon = ({ size }: { size?: number }) => (
 export const SearchIcon = ({ size }: { size?: number }) => (
   <Stroke size={size}><circle cx="7" cy="7" r="4.5" /><path d="m10.5 10.5 3 3" /></Stroke>
 )
+export const ChevronUpIcon = ({ size }: { size?: number }) => (
+  <Stroke size={size}><path d="m4 10 4-4 4 4" /></Stroke>
+)
+export const ChevronDownIcon = ({ size }: { size?: number }) => (
+  <Stroke size={size}><path d="m4 6 4 4 4-4" /></Stroke>
+)
+export const CloseIcon = ({ size }: { size?: number }) => (
+  <Stroke size={size}><path d="m4 4 8 8M12 4l-8 8" /></Stroke>
+)
