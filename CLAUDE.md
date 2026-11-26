@@ -93,7 +93,7 @@ Dependencies point inward: `app` → `features`/`editor` → `data` → `core`.
 - **Chat state is module-level** (`features/ask/store.ts`), not component state, so replies keep streaming when you leave the Ask view and the sidebar avatar can reflect mood. Don't move it into a component.
 - **Theme scheme attribute.** `applyTheme` sets `data-theme` and `data-scheme` (light/dark) on `<html>`. Use `:root[data-scheme='dark']` for dark-only tweaks (e.g. character shadows); never infer dark from `prefers-color-scheme` since users can force a theme.
 - **Never sort the sidebar by `updatedAt`.** It reshuffled the tree whenever a page was opened. Order is alphabetical now. The editor also only saves when something changed (dirty flag), because an untouched save bumps updatedAt, which sync reads as an edit.
-- **Browser storage keys** use the `npkn.` prefix (`npkn.theme`, `npkn.ask`, `npkn.welcome`, `npkn.customThemes`, `npkn.character`, `npkn.look`, `npkn.characterColors`, `npkn.collapsed`, `npkn.ai`, `npkn.width`, `npkn.todoGroup`); IndexedDB database name is `notes`. A rename must migrate these.
+- **Browser storage keys** use the `npkn.` prefix (`npkn.theme`, `npkn.ask`, `npkn.welcome`, `npkn.customThemes`, `npkn.character`, `npkn.look`, `npkn.characterColors`, `npkn.collapsed`, `npkn.ai`, `npkn.width`, `npkn.todoGroup`, `npkn.focus`); IndexedDB database name is `notes`. A rename must migrate these.
 - Dexie `update(id, {x: undefined})` clears the field; that's how removing front matter works.
 
 ## Tables

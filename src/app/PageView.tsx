@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Page } from '../core/types'
 import { download, fileSlug } from '../core/bundle'
 import { backlinks, fileLinkMapper } from '../core/links'
@@ -8,7 +8,8 @@ import { planPaths, stripYamlKey, upsertYamlKey } from '../core/notefile'
 import { updatePage } from '../data/pages'
 import { PageEditor } from '../editor/Editor'
 import { PageProperties } from '../editor/PageProperties'
-import { ExportIcon, PinIcon, TrashIcon } from '../ui/icons'
+import { CopyIcon, ExportIcon, FocusIcon, PinIcon, TrashIcon } from '../ui/icons'
+import { setFocusMode } from '../ui/display'
 
 export function PageView({
   page,
@@ -36,11 +37,24 @@ export function PageView({
   useEffect(() => commitTitle, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // A lone file still gets working relative links: paths are where each page would sit in a bundle.
-  const exportPage = () => {
+  const asMarkdown = () => {
     const paths = planPaths(pages, new Map())
     const self = paths.get(page.id) ?? `${fileSlug(page.title)}.md`
-    const text = pageToMarkdown(page, { linkHref: fileLinkMapper(self, id => paths.get(id)) })
-    download(`${fileSlug(page.title)}.md`, new Blob([text], { type: 'text/markdown' }))
+    return pageToMarkdown(page, { linkHref: fileLinkMapper(self, id => paths.get(id)) })
+  }
+  const exportPage = () =>
+    download(`${fileSlug(page.title)}.md`, new Blob([asMarkdown()], { type: 'text/markdown' }))
+
+  const [copied, setCopied] = useState<'ok' | 'failed'>()
+  const copyTimer = useRef<number>()
+  useEffect(() => () => window.clearTimeout(copyTimer.current), [])
+  const copyPage = () => {
+    const done = (state: 'ok' | 'failed') => {
+      setCopied(state)
+      window.clearTimeout(copyTimer.current)
+      copyTimer.current = window.setTimeout(() => setCopied(undefined), state === 'ok' ? 1500 : 4000)
+    }
+    navigator.clipboard.writeText(asMarkdown()).then(() => done('ok'), () => done('failed'))
   }
 
   const pinned = isPinned(page.frontmatter)
@@ -79,6 +93,16 @@ export function PageView({
           </button>
           <button className="dock-btn" onClick={exportPage} title="Download as .md with front matter">
             <ExportIcon /> Export .md
+          </button>
+          <button
+            className={'dock-btn' + (copied === 'failed' ? ' failed' : '')}
+            onClick={copyPage}
+            title={copied === 'failed' ? 'Clipboard write was refused' : 'Copy as .md with front matter'}
+          >
+            <CopyIcon /> <span aria-live="polite">{copied === 'ok' ? 'Copied' : copied === 'failed' ? 'Copy failed' : 'Copy .md'}</span>
+          </button>
+          <button className="dock-btn" onClick={() => setFocusMode(true)} title="Focus mode (Cmd/Ctrl+Shift+F)">
+            <FocusIcon /> Focus
           </button>
           <button className="dock-btn danger" onClick={() => onDelete(page.id)}>
             <TrashIcon /> Delete

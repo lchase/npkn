@@ -26,8 +26,41 @@ function read(): PageWidth {
 
 let width: PageWidth = read()
 
+// Focus mode: sidebar and page chrome hidden, title and editor left. Same per-device treatment as width.
+const FOCUS_KEY = 'npkn.focus'
+let focus = (() => {
+  try {
+    return localStorage.getItem(FOCUS_KEY) === '1'
+  } catch {
+    return false
+  }
+})()
+
 function apply() {
   document.documentElement.dataset.width = width
+  if (focus) document.documentElement.dataset.focus = ''
+  else delete document.documentElement.dataset.focus
+}
+
+export function setFocusMode(next: boolean) {
+  focus = next
+  try {
+    if (next) localStorage.setItem(FOCUS_KEY, '1')
+    else localStorage.removeItem(FOCUS_KEY)
+  } catch {
+    /* preference just won't persist */
+  }
+  apply()
+  listeners.forEach(l => l())
+}
+
+export const isFocusMode = () => focus
+
+export function useFocusMode(): boolean {
+  return useSyncExternalStore(
+    cb => (listeners.add(cb), () => void listeners.delete(cb)),
+    () => focus,
+  )
 }
 
 export function setPageWidth(next: PageWidth) {

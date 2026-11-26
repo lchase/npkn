@@ -50,6 +50,8 @@ const SHORTCUTS: [string, string][] = [
   ['Mod[  Mod]', 'Back / forward'],
   ['Mod⇧J', "Today's journal page"],
   ['ModF', 'Find in page'],
+  ['Mod⇧F', 'Focus mode: hide sidebar and page chrome'],
+  ['Esc', 'Leave focus mode (closes find or a popup first)'],
   ['ModK', 'Edit link, or link the selection'],
   ['/', 'Block menu: headings, lists, table, code…'],
   ['[[', 'Link to a page'],
