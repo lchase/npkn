@@ -190,3 +190,28 @@ ul[data-type='taskList'] ul[data-type='taskList'] { margin-left: 0.3em; }
 .find-bar button:disabled { opacity: 0.4; cursor: default; }
 .find-hit { background: color-mix(in srgb, var(--accent) 22%, transparent); border-radius: 2px; }
 .find-hit.current { background: color-mix(in srgb, var(--accent) 55%, transparent); outline: 1px solid var(--accent); }
+
+/* Outline: headings in the free space right of the page (Outline.tsx decides whether there's room). */
+.page { position: relative; }
+.outline { position: absolute; top: 0; bottom: 0; left: calc(100% + 32px); width: 168px; }
+.outline ul { position: sticky; top: 8px; margin: 0; padding: 0; list-style: none; max-height: calc(100vh - 120px); overflow-y: auto; }
+.outline button {
+  display: block;
+  width: 100%;
+  padding: 3px 0;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12.5px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.outline button:hover { color: var(--text); }
+.outline .lvl2 button { padding-left: 12px; }
+.outline .lvl3 button { padding-left: 24px; }
+.outline .on button { color: var(--accent); }
+.editor h1, .editor h2, .editor h3 { scroll-margin-top: 24px; }
