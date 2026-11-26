@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { privateIds } from '../../core/frontmatter'
+import { parseEdits } from '../../core/noteEdits'
 import type { Page } from '../../core/types'
 import { Avatar, type Mood } from './characters'
 import { Gallery } from './characters/Gallery'
 import { activeProvider, setAiConfig, useAiConfig } from './config'
 import { Markdown } from './Markdown'
 import type { Source } from './retrieve'
-import { clear, send, setOffline, stop, useAsk } from './store'
+import { EditCard } from './EditCard'
+import { clear, resolveEdit, send, setOffline, stop, useAsk } from './store'
 import { useModels } from './useModels'
 import { LockIcon } from '../../ui/icons'
 
@@ -138,18 +140,27 @@ export function AskView({ pages, onOpen, onOpenSettings }: { pages: Page[]; onOp
             </div>
           )}
 
-          {messages.map((m, i) => (
+          {messages.map((m, i) => {
+            const streaming = busy && i === messages.length - 1
+            // Assistant replies may carry proposed note edits; show the text without them, and cards after.
+            const reply = m.role === 'assistant' && !m.error ? parseEdits(m.content) : null
+            return (
             <div key={i} className={`msg ${m.role}${m.error ? ' error' : ''}`}>
-              <div className="msg-body">
-                {m.role === 'assistant' && !m.error ? (
-                  m.content ? <Markdown text={m.content} /> : ''
-                ) : (
-                  m.content
-                )}
-              </div>
-              {m.role === 'assistant' && m.sources && m.sources.length > 0 && m.content && !m.error && !(busy && i === messages.length - 1) && (
+              <div className="msg-body">{reply ? (reply.text ? <Markdown text={reply.text} /> : '') : m.content}</div>
+              {reply && !streaming && reply.edits.map((edit, j) => (
+                <EditCard
+                  key={j}
+                  edit={edit}
+                  state={m.edits?.[j]}
+                  sources={m.sources ?? []}
+                  onSave={() => resolveEdit(i, j, 'save')}
+                  onDiscard={() => resolveEdit(i, j, 'discard')}
+                  onOpen={onOpen}
+                />
+              ))}
+              {reply && m.sources && m.sources.length > 0 && reply.text && !streaming && (
                 <div className="msg-sources">
-                  {citedSources(m.content, m.sources).map(s => (
+                  {citedSources(reply.text, m.sources).map(s => (
                     <button key={s.pageId} onClick={() => onOpen(s.pageId)}>
                       [{s.n}] {s.title}
                     </button>
@@ -168,7 +179,8 @@ export function AskView({ pages, onOpen, onOpenSettings }: { pages: Page[]; onOp
                 </div>
               )}
             </div>
-          ))}
+            )
+          })}
           <div ref={bottom} />
         </div>
 

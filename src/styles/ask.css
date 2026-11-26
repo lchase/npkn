@@ -41,6 +41,25 @@
   overflow-wrap: anywhere; /* a pasted long URL wraps instead of widening the whole thread */
 }
 .msg.error .msg-body { color: var(--danger); }
+.edit-card { margin-top: 10px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 14px; }
+.edit-card.saved { border-color: color-mix(in srgb, var(--ok) 50%, var(--line)); }
+.edit-card.discarded { opacity: 0.6; }
+.edit-head { font-weight: 600; margin-bottom: 6px; }
+.edit-body { max-height: 220px; overflow-y: auto; color: var(--text); }
+.edit-body > :last-child { margin-bottom: 0; }
+.edit-diff { display: flex; flex-direction: column; gap: 4px; }
+.edit-diff del, .edit-diff ins { text-decoration: none; padding: 2px 8px; border-radius: 6px; white-space: pre-wrap; }
+.edit-diff del { background: color-mix(in srgb, var(--danger) 14%, transparent); }
+.edit-diff del::before { content: '− '; color: var(--danger); }
+.edit-diff ins { background: color-mix(in srgb, var(--ok) 16%, transparent); }
+.edit-diff ins::before { content: '+ '; color: var(--ok); }
+.edit-raw { margin: 0; font-size: 12px; color: var(--muted); white-space: pre-wrap; word-break: break-word; max-height: 120px; overflow: auto; }
+.edit-actions { display: flex; gap: 8px; margin-top: 10px; }
+.edit-actions button { padding: 2px 14px; }
+.edit-actions button.ghost { background: none; border: 1px solid var(--line); color: var(--muted); }
+.edit-foot { margin-top: 8px; font-size: 12px; color: var(--muted); }
+.edit-foot.error { color: var(--danger); }
+.edit-foot .linklike { padding: 0; font-size: 12px; }
 .msg-working { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 12px; color: var(--muted); }
 .msg-working .spinner {
   width: 10px; height: 10px; border-radius: 50%;

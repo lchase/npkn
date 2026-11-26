@@ -1,5 +1,7 @@
 import { useSyncExternalStore } from 'react'
+import { parseEdits } from '../../core/noteEdits'
 import type { Page } from '../../core/types'
+import { applyEdit } from './writeNotes'
 import { buildContext, type Source } from './retrieve'
 import { activeProvider } from './config'
 import { isLooping, trimLoop } from './repetition'
@@ -17,7 +19,11 @@ export interface Msg {
   looped?: boolean
   /** performance.now() when the question was sent; drives the live timer while busy. */
   startedAt?: number
+  /** What the user did with each edit the reply proposed, by its index in `parseEdits(content).edits`. */
+  edits?: Record<number, EditState>
 }
+
+export type EditState = { status: 'saving' } | { status: 'saved'; pageId: string; title: string } | { status: 'discarded' } | { status: 'failed'; message: string }
 
 interface State {
   messages: Msg[]
@@ -55,6 +61,19 @@ export function useAsk(): State & { displayMood: Mood } {
 
 export function setOffline(offline: boolean) {
   if (state.offline !== offline) set({ offline })
+}
+
+/** The user's answer to one proposed edit. Saving is the only path that writes a note. */
+export async function resolveEdit(msgIndex: number, editIndex: number, action: 'save' | 'discard') {
+  const msg = state.messages[msgIndex]
+  const edit = msg && parseEdits(msg.content).edits[editIndex]
+  if (!edit || msg.edits?.[editIndex]) return // unknown, or already decided (double click)
+  const put = (s: EditState) =>
+    set({ messages: state.messages.map((m, i) => (i === msgIndex ? { ...m, edits: { ...m.edits, [editIndex]: s } } : m)) })
+  if (action === 'discard') return put({ status: 'discarded' })
+  put({ status: 'saving' }) // claims the slot before the await, so a second click can't write twice
+  const r = await applyEdit(edit, msg.sources ?? [])
+  put(r.ok ? { status: 'saved', pageId: r.pageId, title: r.title } : { status: 'failed', message: r.message })
 }
 
 export function stop() {
