@@ -7,9 +7,11 @@ type Item = { kind: 'page'; id: string; title: string } | { kind: 'create'; titl
 /**
  * Cmd/Ctrl+P: jump to a page by title. Enter opens the highlighted page; Cmd/Ctrl+Enter (or the
  * "Create" row) makes a new top-level page with the typed title. Same ranking as the `[[` picker.
+ * With no query, recently visited pages (`recent`: ids, newest first) come before the rest.
  */
-export function QuickSwitcher({ pages, onOpen, onCreate }: {
+export function QuickSwitcher({ pages, recent, onOpen, onCreate }: {
   pages: Page[]
+  recent: string[]
   onOpen: (id: string) => void
   onCreate: (title: string) => void
 }) {
@@ -33,7 +35,10 @@ export function QuickSwitcher({ pages, onOpen, onCreate }: {
   if (!open) return null
 
   const q = query.trim()
-  const items: Item[] = matchPages(pages.map(p => ({ id: p.id, title: p.title || 'Untitled' })), q, 12).map(p => ({ kind: 'page', ...p }))
+  const dir = pages.map(p => ({ id: p.id, title: p.title || 'Untitled' }))
+  const seen = q ? [] : recent.flatMap(id => dir.filter(p => p.id === id))
+  const rest = matchPages(dir.filter(p => !seen.includes(p)), q, 12 - Math.min(seen.length, 12))
+  const items: Item[] = [...seen.slice(0, 12), ...rest].map(p => ({ kind: 'page', ...p }))
   if (q && !pages.some(p => p.title.toLowerCase() === q.toLowerCase())) items.push({ kind: 'create', title: q })
   const at = Math.min(index, Math.max(0, items.length - 1))
 

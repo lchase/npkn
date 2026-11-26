@@ -24,7 +24,10 @@ function Stroke({ size = 16, children }: { size?: number; children: React.ReactN
 export const TodosIcon = ({ size }: { size?: number }) => (
   <Stroke size={size}><circle cx="8" cy="8" r="6" /><path d="m5.4 8.1 1.8 1.8 3.4-3.7" /></Stroke>
 )
-export const SettingsIcon = ({ size }: { size?: number }) => (
+export const TodayIcon = ({ size }: { size?: number }) => (
+  <Stroke size={size}><rect x="2.5" y="3.5" width="11" height="10" rx="1.5" /><path d="M2.5 6.5h11M5.5 2.2v2.4M10.5 2.2v2.4" /><circle cx="8" cy="10" r="1" fill="currentColor" /></Stroke>
+)
+export const SettingsIcon =({ size }: { size?: number }) => (
   <Stroke size={size}><path d="M2.5 5h6M11.5 5h2M2.5 11h2M7.5 11h6" /><circle cx="10" cy="5" r="1.5" /><circle cx="6" cy="11" r="1.5" /></Stroke>
 )
 export const PageIcon = ({ size }: { size?: number }) => (
