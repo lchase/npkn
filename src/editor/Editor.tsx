@@ -6,6 +6,7 @@ import { PageLinks } from './pageLinks'
 import { SlashMenu } from './slashMenu'
 import { FindInPage } from './findInPage'
 import { FindBar } from './FindBar'
+import { Outline } from './Outline'
 import { TableBar } from './TableBar'
 import { markdownToPage, pastedTableMarkdown } from '../core/markdown'
 import { pastedLinkLines } from '../core/pasteLinks'
@@ -107,6 +108,7 @@ export function PageEditor({ page }: { page: Page }) {
       {editor && findOpen && <FindBar editor={editor} inputRef={findInput} onClose={() => setFindOpen(false)} />}
       {editor && <TableBar editor={editor} />}
       <EditorContent editor={editor} className="editor" />
+      {editor && <Outline editor={editor} />}
       {editor && linkTarget && <LinkEditor editor={editor} target={linkTarget} onClose={() => setLinkTarget(null)} />}
     </>
   )
