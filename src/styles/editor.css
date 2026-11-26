@@ -106,6 +106,32 @@ ul[data-type='taskList'] ul[data-type='taskList'] { margin-left: 0.3em; }
 .chip-opt-note { color: var(--muted); font-size: 12px; }
 .pl-empty { padding: 6px 10px; color: var(--muted); }
 
+/* Quick switcher (Cmd/Ctrl+P): the same rows as the `[[` picker, centred near the top. */
+.qs-backdrop { position: fixed; inset: 0; z-index: 60; display: flex; justify-content: center; align-items: flex-start; padding: 12vh 16px 0; }
+.qs {
+  width: min(520px, 100%);
+  padding: 6px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  font-size: 14px;
+}
+.qs input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  margin-bottom: 4px;
+  font: inherit;
+  font-size: 15px;
+  color: var(--text);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  outline: none;
+}
+.qs-list { max-height: 50vh; overflow-y: auto; }
+
 .backlinks { margin-top: 56px; padding-top: 14px; border-top: 1px solid var(--line); }
 .backlinks h4 {
   margin: 0 0 6px;
@@ -147,3 +173,47 @@ ul[data-type='taskList'] ul[data-type='taskList'] { margin-left: 0.3em; }
 .editor th, .editor td { border: 1px solid var(--line); padding: 6px 10px; vertical-align: top; text-align: left; position: relative; min-width: 3em; }
 .editor th { background: var(--code-bg); font-weight: 600; }
 .editor .selectedCell::after { content: ''; position: absolute; inset: 0; background: color-mix(in srgb, var(--accent) 18%, transparent); pointer-events: none; }
+
+/* Find in page (FindBar.tsx). The zero-height sticky anchor keeps the bar at the top right of the visible
+   page while you step through matches, without pushing the content down. */
+.find-anchor { position: sticky; top: 12px; z-index: 20; height: 0; display: flex; justify-content: flex-end; }
+.find-bar {
+  display: flex; align-items: center; gap: 2px; height: 34px; padding: 0 4px 0 10px;
+  background: var(--bg); border: 1px solid var(--line); border-radius: calc(var(--radius) * 1.5);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--text) 12%, transparent);
+  font-size: 12.5px;
+}
+.find-bar:focus-within { border-color: var(--accent); }
+.find-bar input { width: 170px; border: none; outline: none; background: none; }
+.find-bar input::placeholder { color: var(--muted); }
+.find-count { min-width: 64px; color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; padding-right: 4px; }
+.find-bar button { display: grid; place-items: center; width: 24px; height: 24px; padding: 0; border: none; border-radius: var(--radius); background: none; color: var(--muted); }
+.find-bar button:hover:not(:disabled) { color: var(--text); background: color-mix(in srgb, var(--text) 9%, transparent); }
+.find-bar button:disabled { opacity: 0.4; cursor: default; }
+.find-hit { background: color-mix(in srgb, var(--accent) 22%, transparent); border-radius: 2px; }
+.find-hit.current { background: color-mix(in srgb, var(--accent) 55%, transparent); outline: 1px solid var(--accent); }
+
+/* Outline: headings in the free space right of the page (Outline.tsx decides whether there's room). */
+.page { position: relative; }
+.outline { position: absolute; top: 0; bottom: 0; left: calc(100% + 32px); width: 168px; }
+.outline ul { position: sticky; top: 8px; margin: 0; padding: 0; list-style: none; max-height: calc(100vh - 120px); overflow-y: auto; }
+.outline button {
+  display: block;
+  width: 100%;
+  padding: 3px 0;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12.5px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.outline button:hover { color: var(--text); }
+.outline .lvl2 button { padding-left: 12px; }
+.outline .lvl3 button { padding-left: 24px; }
+.outline .on button { color: var(--accent); }
+.editor h1, .editor h2, .editor h3 { scroll-margin-top: 24px; }

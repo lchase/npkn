@@ -14,7 +14,7 @@ const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '.
 const ELECTRON = `${REPO}/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron`
 const UD = fs.mkdtempSync(path.join(os.tmpdir(), 'npkn-bud-'))
 const PORT = 9555
-const VITE = 5199
+const VITE = 5299 // not the dev server's port, so the suite runs while `npm run dev` is up
 const sleep = ms => new Promise(r => setTimeout(r, ms))
 let pass = 0, fail = 0
 const check = (name, ok, detail = '') => { ok ? pass++ : fail++; console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${ok ? '' : '   <- ' + detail}`) }
@@ -115,8 +115,8 @@ const ui = {
     return !!(await waitFor(() => has('.page .title'), 6000, 100))
   },
   del: async () => {
-    await waitFor(() => evalIn(`!![...document.querySelectorAll('.page-actions button')].find(b=>b.textContent==='Delete')`), 6000, 100)
-    return evalIn(`(()=>{window.confirm=()=>true; [...document.querySelectorAll('.page-actions button')].find(b=>b.textContent==='Delete').click(); return true})()`)
+    await waitFor(() => evalIn(`!![...document.querySelectorAll('.page-actions button')].find(b=>b.textContent.trim()==='Delete')`), 6000, 100)
+    return evalIn(`(()=>{window.confirm=()=>true; [...document.querySelectorAll('.page-actions button')].find(b=>b.textContent.trim()==='Delete').click(); return true})()`)
   },
 }
 const ATTACH = `(async () => {

@@ -6,7 +6,7 @@ No backend. Read `README.md` for the product and layout; this file is the workin
 ## Commands
 
 ```bash
-npm run dev         # http://localhost:5173
+npm run dev         # http://localhost:5199
 npm run build       # tsc --noEmit && vite build  (run before declaring work done)
 npm run typecheck
 ```

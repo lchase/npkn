@@ -1,13 +1,14 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { bundleFiles, download, makeZip, planImport, readZip } from '../core/bundle'
 import { toISO } from '../core/dates'
 import { isFlaggedPrivate, privateIds } from '../core/frontmatter'
+import { push, startNav, step } from '../core/history'
 import { resolveRelativeLinks } from '../core/links'
 import { markdownToPage } from '../core/markdown'
 import { searchPages } from '../core/search'
 import { extractTodos } from '../core/todos'
 import { collectLabels, labelCss, labelOptions, registryFromPages } from '../core/labels'
-import { addPage, backfillCreatedAt, deletePageTree, newPage, updatePage, usePages } from '../data/pages'
+import { addPage, backfillCreatedAt, dailyPage, deletePageTree, newPage, updatePage, usePages } from '../data/pages'
 import { setPageDirectory } from '../editor/pageDirectory'
 import { loadSampleNotebook } from '../data/sample'
 import { startFolderSync } from '../data/folderSync'
@@ -15,15 +16,42 @@ import { ensureWelcome } from '../data/seed'
 import { AskView } from '../features/ask/AskView'
 import { TodosView } from '../features/todos/TodosView'
 import { PageView } from './PageView'
+import { QuickSwitcher } from './QuickSwitcher'
 import { SettingsView } from './SettingsView'
 import { Sidebar, type View } from './Sidebar'
+
+const viewKey = (v: View) => (v.kind === 'page' ? `page:${v.id}` : v.kind)
 
 /** App shell: owns navigation and top-level page actions; everything else lives in features. */
 export default function App() {
   const pages = usePages()
   // Land on Ask: the assistant is the front door to the notebook, even though the notebook is the product.
-  const [view, setView] = useState<View>({ kind: 'ask' })
+  // Back/forward history (Cmd/Ctrl+[ and ]). In memory only; every navigation goes through setView.
+  const [nav, setNav] = useState(() => startNav<View>({ kind: 'ask' }))
+  const view = nav.stack[nav.at]
+  const setView = useCallback((v: View) => setNav(n => push(n, v, viewKey)), [])
   const [query, setQuery] = useState('')
+
+  const openToday = async () => setView({ kind: 'page', id: await dailyPage(toISO(new Date())) })
+
+  // Cmd+[ / ] aren't bound by the editor (no indent keymap here), so they navigate even while typing.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!(e.metaKey || e.ctrlKey) || e.altKey) return
+      const k = e.key.toLowerCase()
+      if (!e.shiftKey && (k === '[' || k === ']')) {
+        e.preventDefault()
+        const ids = new Set(pages?.map(p => p.id))
+        setNav(n => step(n, k === '[' ? -1 : 1, v => v.kind !== 'page' || ids.has(v.id), viewKey))
+      } else if (e.shiftKey && k === 'j') {
+        e.preventDefault()
+        openToday()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pages])
 
   useEffect(() => {
     backfillCreatedAt()
@@ -117,6 +145,16 @@ export default function App() {
   return (
     <div className="app">
       <style>{labelStyles}</style>
+      <QuickSwitcher
+        pages={pages}
+        recent={nav.recent.flatMap(v => (v.kind === 'page' && viewKey(v) !== viewKey(view) ? [v.id] : []))}
+        onOpen={open}
+        onCreate={async title => {
+          const p = newPage(null, title)
+          await addPage(p)
+          open(p.id)
+        }}
+      />
       <Sidebar
         pages={pages}
         view={view}
@@ -130,6 +168,7 @@ export default function App() {
         onImport={importFiles}
         onExportBundle={() => download('notes-okf.zip', makeZip(bundleFiles(pages)))}
         onLoadSample={async () => open(await loadSampleNotebook())}
+        onToday={openToday}
       />
 
       <main>
