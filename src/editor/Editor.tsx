@@ -4,6 +4,7 @@ import Placeholder from '@tiptap/extension-placeholder'
 import { editorExtensions } from './extensions'
 import { ChipSuggest } from './chipSuggest'
 import { PageLinks } from './pageLinks'
+import { PrBadges } from './prBadges'
 import { SlashMenu } from './slashMenu'
 import { FindInPage } from './findInPage'
 import { FindBar } from './FindBar'
@@ -74,6 +75,7 @@ export function PageEditor({ page }: { page: Page }) {
       // Interactive only: kept out of the schema list so markdown import stays free of UI code.
       ChipSuggest,
       PageLinks,
+      PrBadges,
       SlashMenu,
       FindInPage,
       Placeholder.configure({ placeholder: 'Start writing…  type / for blocks, or try ## , [] , @fri' }),

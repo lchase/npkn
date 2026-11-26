@@ -1,0 +1,41 @@
+/* ---- GitHub PR badges (editor/prBadges.ts) ---- */
+.prb { cursor: pointer; user-select: none; -webkit-user-select: none; white-space: nowrap; --c: var(--muted); }
+.prb-open { --c: var(--pr-open); }
+.prb-draft { --c: var(--pr-draft); }
+.prb-merged { --c: var(--pr-merged); }
+.prb-closed { --c: var(--pr-closed); }
+.prb-checking { --c: var(--muted); animation: prb-pulse 1.2s ease-in-out infinite; }
+.prb-noaccess { --c: var(--muted); }
+.prb-rejected { --c: var(--danger); }
+.prb-ratelimited { opacity: 0.5; animation: none; }
+@keyframes prb-pulse { 50% { opacity: 0.4; } }
+
+/* Pill: after the link, chip metrics, tinted in the state colour */
+.prb-pill {
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 0.78em;
+  line-height: 1.5;
+  font-weight: 600;
+  padding: 0 7px;
+  border-radius: 999px;
+  vertical-align: 1px;
+  color: var(--c);
+  background: color-mix(in srgb, var(--c) 15%, transparent);
+}
+.prb-pill::before { content: '● '; font-size: 0.8em; }
+.prb-pill.prb-noaccess, .prb-pill.prb-rejected, .prb-pill.prb-draft { background: none; border: 1px dashed var(--c); }
+.prb-pill.prb-draft::before { content: '○ '; }
+
+/* Title: a muted trailer with the PR title, the state word in its colour */
+.prb-title { font-size: 0.9em; color: var(--muted); }
+.prb-title i {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--c);
+  vertical-align: 1px;
+}
+.prb-title b { font-weight: 600; color: var(--c); }
+.prb-title.prb-draft i { background: none; box-shadow: inset 0 0 0 1.5px var(--c); }

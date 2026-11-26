@@ -72,6 +72,10 @@
 .set-test .bad { color: var(--danger); font-size: 13px; overflow-wrap: anywhere; }
 .set-hint { margin: 0; color: var(--muted); font-size: 12.5px; }
 
+.set-toggle { display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; }
+.set-toggle input { accent-color: var(--accent); width: 15px; height: 15px; margin: 0; }
+.set-github { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+
 .set-privacy {
   margin-top: 14px;
   padding: 10px 14px;

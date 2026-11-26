@@ -93,7 +93,7 @@ Dependencies point inward: `app` → `features`/`editor` → `data` → `core`.
 - **Chat state is module-level** (`features/ask/store.ts`), not component state, so replies keep streaming when you leave the Ask view and the sidebar avatar can reflect mood. Don't move it into a component.
 - **Theme scheme attribute.** `applyTheme` sets `data-theme` and `data-scheme` (light/dark) on `<html>`. Use `:root[data-scheme='dark']` for dark-only tweaks (e.g. character shadows); never infer dark from `prefers-color-scheme` since users can force a theme.
 - **Never sort the sidebar by `updatedAt`.** It reshuffled the tree whenever a page was opened. Order is alphabetical now. The editor also only saves when something changed (dirty flag), because an untouched save bumps updatedAt, which sync reads as an edit.
-- **Browser storage keys** use the `npkn.` prefix (`npkn.theme`, `npkn.ask`, `npkn.welcome`, `npkn.customThemes`, `npkn.character`, `npkn.look`, `npkn.characterColors`, `npkn.collapsed`, `npkn.ai`, `npkn.width`, `npkn.todoGroup`); IndexedDB database name is `notes`. A rename must migrate these.
+- **Browser storage keys** use the `npkn.` prefix (`npkn.theme`, `npkn.ask`, `npkn.welcome`, `npkn.customThemes`, `npkn.character`, `npkn.look`, `npkn.characterColors`, `npkn.collapsed`, `npkn.ai`, `npkn.width`, `npkn.todoGroup`, `npkn.github`); IndexedDB database name is `notes`. A rename must migrate these.
 - Dexie `update(id, {x: undefined})` clears the field; that's how removing front matter works.
 
 ## Tables
@@ -124,6 +124,25 @@ Users can recolor any character from the gallery (overrides in `npkn.characterCo
 To add one: add a `ShapeKind` + path in `Shape`, then a preset in `PRESETS`. Shapes are deliberately original silhouettes, not copies of any existing mascot set.
 
 Traps: (1) don't put an SVG `transform="rotate(a cx cy)"` on an element that also has CSS `transform-box`/`transform-origin`; the origin gets applied twice and the element flies off. Rotate a wrapper `<g>` instead (see `Eye`). (2) The folder is `characters/`, not `avatar/`, because `Avatar` is exported from it and macOS would collide the names.
+
+## GitHub PR badges
+
+Off by default (Settings > GitHub, `npkn.github` = `{ enabled, token, style }`); the toggle is the consent and
+nothing reaches api.github.com while it is off. Terms: **PR state** vs **badge state** (`GLOSSARY.md`).
+
+- Render-only: `editor/prBadges.ts` draws a widget decoration after each `github.com/<o>/<r>/pull/<n>` link. It never
+  enters the document, the `.md` file, exports or `updatedAt`; redraws are no-op transactions, not edits.
+- The editor reads state through an injected `PrBadgeSource` (`get`, `style`, `subscribe`, `watch`), which `App`
+  wires to `features/github/status.ts`, like `pageDirectory`. The editor never imports a feature.
+- `status.ts` holds one in-memory cache shared across pages and polls only the open page's PRs, only while visible:
+  5 min with a token, `max(5 min, PRs x 2 min)` without; merged PRs once per session; 401 stops all until the token
+  changes; 404 stops that PR until its page is reopened; 403/429 rate limits pause everything until the reset.
+- `client.ts` is the only code calling GitHub: token in the `Authorization` header only, bodies never logged.
+- **Private-page exception:** badges show on `private: true` pages too, so `owner/repo/number` of their PR links
+  goes to GitHub. Deliberate, disclosed in Settings, and why `private.test.ts` does not cover it.
+- **Electron visibility (checked over CDP, Electron 44, macOS):** `BrowserWindow.minimize()` and `hide()` both fire
+  `visibilitychange` to `hidden`, and `restore()`/`show()` fire it back to `visible`, so the poller's
+  `document.visibilityState` check pauses polling in the desktop app with no extra bridge.
 
 ## Display preferences
 
