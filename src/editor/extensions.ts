@@ -13,8 +13,9 @@ import { Chip } from './chip'
 export const editorExtensions = [
   StarterKit.configure({ codeBlock: false }),
   CodeBlock,
-  // npkn: is the app's private scheme for links to other pages (core/links.ts).
-  Link.configure({ openOnClick: false, protocols: ['npkn'] }),
+  // npkn: is the app's private scheme for links to other pages (core/links.ts). Not inclusive: v2 makes
+  // the mark inclusive whenever autolink is on, so text typed right after a pasted link joined the link.
+  Link.extend({ inclusive: () => false }).configure({ openOnClick: false, protocols: ['npkn'] }),
   TaskList,
   TaskItem.configure({ nested: true }),
   // Not resizable: markdown has no column widths, so a dragged width would silently vanish on sync.

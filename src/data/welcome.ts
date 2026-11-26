@@ -40,7 +40,7 @@ export function buildWelcome(): Doc {
   return {
     type: 'doc',
     content: [
-      p(t('Every element the editor can render, in one place. Switch themes from the sidebar footer and compare.')),
+      p(t('Every element the editor can render, in one place. Switch themes in Settings > Display and compare.')),
 
       h(2, 'Headings'),
       h(1, 'Heading 1'),

@@ -115,8 +115,8 @@ const ui = {
     return !!(await waitFor(() => has('.page .title'), 6000, 100))
   },
   del: async () => {
-    await waitFor(() => evalIn(`!![...document.querySelectorAll('.page-actions button')].find(b=>b.textContent==='Delete')`), 6000, 100)
-    return evalIn(`(()=>{window.confirm=()=>true; [...document.querySelectorAll('.page-actions button')].find(b=>b.textContent==='Delete').click(); return true})()`)
+    await waitFor(() => evalIn(`!![...document.querySelectorAll('.page-actions button')].find(b=>b.textContent.trim()==='Delete')`), 6000, 100)
+    return evalIn(`(()=>{window.confirm=()=>true; [...document.querySelectorAll('.page-actions button')].find(b=>b.textContent.trim()==='Delete').click(); return true})()`)
   },
 }
 const ATTACH = `(async () => {

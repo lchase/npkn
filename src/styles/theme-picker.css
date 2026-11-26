@@ -1,22 +1,35 @@
-/* ---- theme picker ---- */
-.theme-picker { font-size: 12px; color: var(--muted); }
-.theme-row { display: flex; align-items: center; gap: 6px; }
-.theme-segmented {
-  display: flex; flex: 1; gap: 2px; padding: 2px;
-  border: 1px solid var(--line); border-radius: var(--radius);
-  background: color-mix(in srgb, var(--text) 3%, transparent);
+/* ---- theme picker (Settings > Display) ---- */
+.theme-settings { display: grid; grid-template-columns: minmax(150px, 200px) minmax(0, 1fr); gap: 14px; align-items: start; }
+.theme-list { display: flex; flex-direction: column; gap: 1px; max-height: 470px; overflow-y: auto; }
+.theme-opt {
+  display: flex; align-items: center; gap: 8px; text-align: left;
+  padding: 5px 8px; font-size: 13px; color: var(--muted);
+  background: none; border: 1px solid transparent; border-radius: var(--radius);
 }
-.theme-seg {
-  flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 4px;
-  padding: 4px 2px; font-size: 12px; color: var(--muted);
-  background: none; border: none; border-radius: calc(var(--radius) - 2px);
+.theme-opt:hover, .theme-opt:focus-visible { color: var(--text); background: color-mix(in srgb, var(--text) 8%, transparent); outline: none; }
+.theme-opt.on { color: var(--text); border-color: var(--accent); }
+.theme-import { color: var(--accent); margin-top: 4px; }
+/* The swatch carries the theme's own tokens inline, so these vars are that theme's colors. */
+.theme-swatch {
+  flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--bg); border: 1px solid var(--line);
 }
-.theme-seg:hover { color: var(--text); }
-.theme-seg.on { color: var(--text); background: color-mix(in srgb, var(--text) 12%, transparent); }
-.theme-more { display: flex; flex-direction: column; gap: 1px; margin-top: 6px; }
-.theme-opt { text-align: left; padding: 4px 8px; font-size: 12px; color: var(--muted); background: none; border: none; border-radius: var(--radius); }
-.theme-opt:hover { color: var(--text); background: color-mix(in srgb, var(--text) 8%, transparent); }
-.theme-opt.on { color: var(--accent); }
+.theme-swatch i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.theme-error { color: var(--danger); margin: 6px 0 0; font-size: 12px; }
+
+/* Sample page. Inline theme vars (on hover) override the app's, so everything inside follows the previewed theme. */
+.theme-preview {
+  min-width: 0; padding: 16px 18px;
+  background: var(--bg); color: var(--text); font: 14px/1.6 var(--font-body);
+  border: 1px solid var(--line); border-radius: 12px;
+}
+.theme-preview { position: sticky; top: 0; }
+.theme-preview > * + * { margin-top: 0.4em; }
+.theme-preview .title { font-size: 1.5rem; }
+.theme-preview h2 { font-size: 1.15rem; margin: 0.6em 0 0.3em; }
+
+@media (max-width: 640px) { .theme-settings { grid-template-columns: 1fr; } .theme-list { max-height: none; } .theme-preview { position: static; } }
+
 .linklike { background: none; border: none; padding: 6px 0 0; color: var(--muted); font-size: 12px; text-decoration: underline; }
 .linklike:hover { color: var(--accent); }
-.theme-error { color: var(--danger); margin: 6px 0 0; }

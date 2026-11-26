@@ -13,7 +13,7 @@ A theme is one JSON file of design tokens. No code, no CSS files, nothing execut
 ```
 
 - **Contribute:** drop the file in `src/themes/builtin/`. It is picked up automatically.
-- **Use privately:** sidebar footer, *Import theme…*. Stored in the browser only.
+- **Use privately:** Settings > Display, *Import theme…*. Stored in the browser only.
 - **Partial is fine.** Missing tokens fall back to Paper (`scheme: "light"`) or Ink (`scheme: "dark"`).
 - `id` must be unique, letters/digits/`-`/`_`. Imported values may not contain `url()` or `@import`.
 
