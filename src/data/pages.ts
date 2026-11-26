@@ -26,6 +26,22 @@ export const putPage = (page: Page) => db.pages.put(page)
 export const updatePage = (id: string, patch: Partial<Omit<Page, 'id'>>) =>
   db.pages.update(id, { ...patch, updatedAt: Date.now() })
 
+/**
+ * The daily note for `date` (ISO), under a top-level `Journal` page; both are created if missing.
+ * Found by parent + exact title, so a renamed day page gets a fresh one rather than a lookalike.
+ * One rw transaction, so a double click can't create two (Dexie serialises them).
+ */
+export const dailyPage = (date: string): Promise<string> =>
+  db.transaction('rw', db.pages, async () => {
+    const all = await db.pages.toArray()
+    let journal = all.find(p => p.parentId === null && p.title === 'Journal')
+    if (!journal) await db.pages.add((journal = newPage(null, 'Journal')))
+    const journalId = journal.id
+    let day = all.find(p => p.parentId === journalId && p.title === date)
+    if (!day) await db.pages.add((day = { ...newPage(journalId, date), frontmatter: 'type: journal\n' }))
+    return day.id
+  })
+
 /** Delete a page and every descendant. */
 export async function deletePageTree(id: string) {
   const all = await db.pages.toArray()

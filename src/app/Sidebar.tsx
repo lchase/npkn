@@ -8,7 +8,7 @@ import { Avatar, type Mood } from '../features/ask/characters'
 import { useAsk } from '../features/ask/store'
 import { ThemePicker } from '../themes/ThemePicker'
 import { NotebookFolder } from './NotebookFolder'
-import { ExportIcon, ImportIcon, LockIcon, PageIcon, PlusIcon, SampleIcon, SearchIcon, SettingsIcon, TodosIcon } from '../ui/icons'
+import { ExportIcon, ImportIcon, LockIcon, PageIcon, PlusIcon, SampleIcon, SearchIcon, SettingsIcon, TodayIcon, TodosIcon } from '../ui/icons'
 
 export type View = { kind: 'todos' } | { kind: 'ask' } | { kind: 'settings' } | { kind: 'page'; id: string }
 
@@ -25,6 +25,7 @@ interface Props {
   onImport: (files: FileList | null) => void
   onExportBundle: () => void
   onLoadSample: () => void
+  onToday: () => void
 }
 
 const ASK_STATUS: Record<Mood, string> = {
@@ -51,7 +52,7 @@ const byTitle = (a: Page, b: Page) =>
   (a.title || 'Untitled').localeCompare(b.title || 'Untitled', undefined, { sensitivity: 'base', numeric: true }) ||
   a.id.localeCompare(b.id)
 
-export function Sidebar({ pages, view, query, results, openTodoCount, privateIds, onQuery, onView, onAdd, onImport, onExportBundle, onLoadSample }: Props) {
+export function Sidebar({ pages, view, query, results, openTodoCount, privateIds, onQuery, onView, onAdd, onImport, onExportBundle, onLoadSample, onToday }: Props) {
   const { displayMood } = useAsk()
   const importInput = useRef<HTMLInputElement>(null)
   const [collapsed, setCollapsed] = useState(loadCollapsed)
@@ -239,6 +240,10 @@ export function Sidebar({ pages, view, query, results, openTodoCount, privateIds
         <span className="nav-glyph"><TodosIcon /></span>
         <span className="nav-title">Todos</span>
         {openTodoCount > 0 && <span className="badge">{openTodoCount}</span>}
+      </div>
+      <div className="nav-item nav-primary" title="Today's journal page (Cmd/Ctrl+Shift+J)" onClick={() => (onQuery(''), onToday())}>
+        <span className="nav-glyph"><TodayIcon /></span>
+        <span className="nav-title">Today</span>
       </div>
       <div className={'nav-item nav-primary' + (view.kind === 'settings' ? ' active' : '')} onClick={() => go({ kind: 'settings' })}>
         <span className="nav-glyph"><SettingsIcon /></span>
