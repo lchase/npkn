@@ -18,7 +18,7 @@ Everything is stored in your browser (IndexedDB). There is no server.
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173
+npm run dev        # http://localhost:5199
 ```
 
 Other scripts: `npm run build` (typecheck + production build), `npm run typecheck`, `npm test`.
