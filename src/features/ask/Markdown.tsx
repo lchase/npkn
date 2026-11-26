@@ -1,75 +1,113 @@
+import { marked, type Token, type Tokens } from 'marked'
 import type { ReactNode } from 'react'
 
-// Tiny, dependency-free renderer for chat replies: **bold**, *italic*, `code`, bullets, numbered
-// lists, and headings. Builds React elements only (no innerHTML), so model output can't inject markup.
+// Chat replies: GFM markdown (tables, nested and task lists, quotes, code, links) from `marked`'s token tree,
+// turned into React elements. No innerHTML anywhere, so model output can't inject markup; raw HTML in a reply is
+// shown as text, images are never fetched (they'd send a request to a model-chosen URL), and only http(s) links
+// get an href.
 
-function inline(s: string): ReactNode[] {
-  const out: ReactNode[] = []
-  // Links: [text](http…) and bare http(s) URLs. Only http(s) ever becomes an href (no javascript: etc.).
-  const re = /(\[[^\]]+\]\(https?:\/\/[^\s)]+\)|https?:\/\/[^\s<>`]+|\*\*[^*]+\*\*|`[^`]+`|\*[^*\s][^*]*\*)/g
-  let last = 0
-  let m: RegExpExecArray | null
-  let k = 0
-  while ((m = re.exec(s))) {
-    if (m.index > last) out.push(s.slice(last, m.index))
-    let t = m[0]
-    if (t.startsWith('[') || t.startsWith('http')) {
-      let text = t
-      let href = t
-      if (t.startsWith('[')) {
-        const i = t.indexOf('](') // link text can't contain ']', so the first '](' is the real split
-        text = t.slice(1, i)
-        href = t.slice(i + 2, -1)
-      } else {
-        // ponytail: trailing sentence punctuation isn't part of the URL; drop it back into the text
-        const trail = /[.,;:!?)\]]+$/.exec(t)?.[0] ?? ''
-        t = t.slice(0, t.length - trail.length)
-        text = href = t
-        re.lastIndex = m.index + t.length
-      }
-      let safe = false
-      try {
-        const p = new URL(href).protocol
-        safe = p === 'http:' || p === 'https:'
-      } catch { /* not a URL: render as text */ }
-      out.push(safe ? <a key={k++} href={href} target="_blank" rel="noopener noreferrer">{text}</a> : <span key={k++}>{t}</span>)
-    } else if (t.startsWith('**')) out.push(<strong key={k++}>{t.slice(2, -2)}</strong>)
-    else if (t.startsWith('`')) out.push(<code key={k++}>{t.slice(1, -1)}</code>)
-    else out.push(<em key={k++}>{t.slice(1, -1)}</em>)
-    last = m.index + t.length
+// marked escapes inline text and code spans for HTML; React escapes again, so undo it once.
+const unescape = (s: string) =>
+  s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&')
+
+const safeHref = (href: string) => {
+  try {
+    const p = new URL(href).protocol
+    return p === 'http:' || p === 'https:'
+  } catch {
+    return false
   }
-  if (last < s.length) out.push(s.slice(last))
-  return out
+}
+
+function inline(tokens: Token[] | undefined): ReactNode[] {
+  return (tokens ?? []).map((t, i): ReactNode => {
+    switch (t.type) {
+      case 'text':
+        return (t as Tokens.Text).tokens ? inline((t as Tokens.Text).tokens) : unescape(t.text)
+      case 'escape':
+        return t.text
+      case 'strong':
+        return <strong key={i}>{inline((t as Tokens.Strong).tokens)}</strong>
+      case 'em':
+        return <em key={i}>{inline((t as Tokens.Em).tokens)}</em>
+      case 'del':
+        return <del key={i}>{inline((t as Tokens.Del).tokens)}</del>
+      case 'codespan':
+        return <code key={i}>{unescape(t.text)}</code>
+      case 'br':
+        return <br key={i} />
+      case 'link': {
+        const l = t as Tokens.Link
+        const kids = inline(l.tokens)
+        return safeHref(l.href) ? (
+          <a key={i} href={l.href} target="_blank" rel="noopener noreferrer">{kids}</a>
+        ) : (
+          <span key={i}>{kids}</span>
+        )
+      }
+      case 'image':
+        return unescape((t as Tokens.Image).text)
+      default:
+        return t.raw // inline html and anything unknown: visible as plain text
+    }
+  })
+}
+
+function blocks(tokens: Token[]): ReactNode[] {
+  return tokens.map((t, i): ReactNode => {
+    switch (t.type) {
+      case 'space':
+        return null
+      case 'heading':
+        return <p key={i}><strong>{inline((t as Tokens.Heading).tokens)}</strong></p>
+      case 'paragraph':
+        return <p key={i}>{inline((t as Tokens.Paragraph).tokens)}</p>
+      case 'text': // a tight list item's own text
+        return <span key={i}>{(t as Tokens.Text).tokens ? inline((t as Tokens.Text).tokens) : unescape(t.text)}</span>
+      case 'blockquote':
+        return <blockquote key={i}>{blocks((t as Tokens.Blockquote).tokens)}</blockquote>
+      case 'code':
+        return <pre key={i}><code>{(t as Tokens.Code).text}</code></pre>
+      case 'hr':
+        return <hr key={i} />
+      case 'list': {
+        const l = t as Tokens.List
+        const Tag = l.ordered ? 'ol' : 'ul'
+        return (
+          <Tag key={i} start={l.ordered && l.start !== 1 ? Number(l.start) || undefined : undefined}>
+            {l.items.map((it, j) => (
+              <li key={j}>
+                {it.task && <span className="md-task">{it.checked ? '☑ ' : '☐ '}</span>}
+                {blocks(it.tokens)}
+              </li>
+            ))}
+          </Tag>
+        )
+      }
+      case 'table': {
+        const tb = t as Tokens.Table
+        const align = (c: number) => (tb.align[c] ? { textAlign: tb.align[c] as 'left' | 'center' | 'right' } : undefined)
+        return (
+          <div className="md-table" key={i}>
+            <table>
+              <thead>
+                <tr>{tb.header.map((h, c) => <th key={c} style={align(c)}>{inline(h.tokens)}</th>)}</tr>
+              </thead>
+              <tbody>
+                {tb.rows.map((r, ri) => (
+                  <tr key={ri}>{r.map((cell, c) => <td key={c} style={align(c)}>{inline(cell.tokens)}</td>)}</tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )
+      }
+      default:
+        return t.raw.trim() ? <p key={i}>{t.raw}</p> : null // block html etc.: shown as text
+    }
+  })
 }
 
 export function Markdown({ text }: { text: string }) {
-  const blocks: ReactNode[] = []
-  let list: { ordered: boolean; items: ReactNode[] } | null = null
-  const flush = () => {
-    if (!list) return
-    const Tag = list.ordered ? 'ol' : 'ul'
-    blocks.push(<Tag key={blocks.length}>{list.items.map((it, i) => <li key={i}>{it}</li>)}</Tag>)
-    list = null
-  }
-
-  for (const raw of text.split('\n')) {
-    const line = raw.trimEnd()
-    const bullet = /^\s*[-*]\s+(.*)$/.exec(line)
-    const num = /^\s*\d+[.)]\s+(.*)$/.exec(line)
-    const head = /^#{1,6}\s+(.*)$/.exec(line)
-    if (bullet || num) {
-      const ordered = !!num
-      if (!list || list.ordered !== ordered) {
-        flush()
-        list = { ordered, items: [] }
-      }
-      list.items.push(inline((bullet ?? num)![1]))
-    } else {
-      flush()
-      if (head) blocks.push(<p key={blocks.length}><strong>{inline(head[1])}</strong></p>)
-      else if (line.trim()) blocks.push(<p key={blocks.length}>{inline(line)}</p>)
-    }
-  }
-  flush()
-  return <>{blocks}</>
+  return <>{blocks(marked.lexer(text, { gfm: true }))}</>
 }

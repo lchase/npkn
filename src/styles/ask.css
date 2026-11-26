@@ -30,7 +30,7 @@
   border-radius: 4px;
   padding: 3px 8px;
 }
-.ask-thread { flex: 1; overflow-y: auto; padding: 4px 0 12px; }
+.ask-thread { flex: 1; min-width: 0; overflow-x: hidden; overflow-y: auto; padding: 4px 0 12px; }
 .msg { margin: 0 0 16px; }
 .msg-body { white-space: pre-wrap; }
 .msg.user .msg-body {
@@ -38,6 +38,7 @@
   border-radius: var(--radius);
   padding: 8px 12px;
   margin-left: 15%;
+  overflow-wrap: anywhere; /* a pasted long URL wraps instead of widening the whole thread */
 }
 .msg.error .msg-body { color: var(--danger); }
 .msg-working { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 12px; color: var(--muted); }
@@ -85,6 +86,19 @@
 .msg.assistant .msg-body { white-space: normal; }
 .msg.assistant .msg-body p { margin: 0 0 0.6em; }
 .msg.assistant .msg-body ul, .msg.assistant .msg-body ol { margin: 0 0 0.6em; padding-left: 1.4em; }
+.msg.assistant .msg-body li > ul, .msg.assistant .msg-body li > ol { margin: 0.2em 0 0; }
+.msg.assistant .msg-body li > p { margin: 0 0 0.3em; }
+.msg.assistant .msg-body hr { border: none; border-top: 1px solid var(--line); margin: 0.8em 0; }
+.msg.assistant .msg-body blockquote { margin: 0 0 0.6em; padding-left: 12px; border-left: 3px solid var(--line); color: var(--muted); }
+.msg.assistant .msg-body code { font-family: var(--font-mono); font-size: 0.9em; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+.msg.assistant .msg-body pre { margin: 0 0 0.6em; padding: 10px 12px; background: var(--code-bg); border-radius: 8px; overflow-x: auto; }
+.msg.assistant .msg-body pre code { padding: 0; background: none; }
+.md-table { overflow-x: auto; margin: 0 0 0.8em; }
+.md-table table { border-collapse: collapse; font-size: 0.92em; }
+.md-table th, .md-table td { text-align: left; padding: 5px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.md-table th { font-weight: 600; border-bottom-color: var(--muted); white-space: nowrap; }
+/* beats the generic .msg-body a break-all: a URL in a cell stays whole and the table scrolls instead */
+.msg.assistant .msg-body .md-table a { word-break: normal; overflow-wrap: normal; white-space: nowrap; }
 
 /* ---- ask empty state ---- */
 .ask-empty { padding: 28px 0; }
